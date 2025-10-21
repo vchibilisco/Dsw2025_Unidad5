@@ -1,26 +1,54 @@
 import { useForm } from 'react-hook-form';
 import Input from './Input';
 import Button from './Button';
+import { useState } from 'react';
+import { frontendErrorMessage } from '../helpers/backendError';
 
 function LoginForm() {
+  const [errorMessage, setErrorMessage] = useState('');
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm({ defaultValues: { username: '', password: '' } });
 
-  const onValid = (data) => {
-    console.log(data);
+  const onValid = async (data) => {
+    try {
+      const response = await fetch('api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+
+        setErrorMessage(frontendErrorMessage[errorData.code]);
+
+        return;
+      }
+
+      setErrorMessage('');
+
+      const token = await response.json();
+
+      console.log(token);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
     <form className='
         flex
         flex-col
-        gap-4
+        gap-20
         bg-white
         p-8
         sm:w-md
+        sm:gap-4
         sm:rounded-lg
         sm:shadow-lg
       '
@@ -43,6 +71,7 @@ function LoginForm() {
       />
 
       <Button type='submit'>Iniciar Sesión</Button>
+      {errorMessage && <p className='text-red-500'>{errorMessage}</p>}
     </form>
   );
 };
