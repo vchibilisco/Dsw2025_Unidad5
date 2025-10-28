@@ -2,7 +2,7 @@ import { useForm } from 'react-hook-form';
 import Input from './Input';
 import Button from './Button';
 import { useState } from 'react';
-import { frontendErrorMessage } from '../helpers/backendError';
+import { login } from '../services/login';
 
 function LoginForm() {
   const [errorMessage, setErrorMessage] = useState('');
@@ -12,31 +12,21 @@ function LoginForm() {
     formState: { errors },
   } = useForm({ defaultValues: { username: '', password: '' } });
 
-  const onValid = async (data) => {
+  const onValid = async (formData) => {
     try {
-      const response = await fetch('api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
+      const { data, error } = await login(formData.username, formData.password);
 
-      if (!response.ok) {
-        const errorData = await response.json();
-
-        setErrorMessage(frontendErrorMessage[errorData.code]);
+      if (error) {
+        setErrorMessage(error.frontendErrorMessage);
 
         return;
       }
 
-      setErrorMessage('');
+      console.log(data);
 
-      const token = await response.json();
-
-      console.log(token);
     } catch (error) {
       console.error(error);
+      setErrorMessage('Llame a soporte');
     }
   };
 
