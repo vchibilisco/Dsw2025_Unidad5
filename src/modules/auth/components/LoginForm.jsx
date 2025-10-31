@@ -1,4 +1,5 @@
 import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
 import Input from './Input';
 import Button from './Button';
 import { useState } from 'react';
@@ -12,6 +13,8 @@ function LoginForm() {
     formState: { errors },
   } = useForm({ defaultValues: { username: '', password: '' } });
 
+  const navigate = useNavigate();
+
   const onValid = async (formData) => {
     try {
       const { data, error } = await login(formData.username, formData.password);
@@ -22,8 +25,9 @@ function LoginForm() {
         return;
       }
 
-      console.log(data);
+      localStorage.setItem('token', data.token);
 
+      navigate('/orders');
     } catch (error) {
       console.error(error);
       setErrorMessage('Llame a soporte');
