@@ -2,7 +2,7 @@
 
 @layer base {
   body {
-    @apply m-0 text-[2rem] h-[100dvh] sm:text-base;
+    @apply m-0 text-[2rem] h-[100dvh] sm:text-base bg-gray-100;
   }
   #root {
     @apply h-[100dvh];

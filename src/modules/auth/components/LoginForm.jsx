@@ -1,9 +1,9 @@
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import Input from './Input';
-import Button from './Button';
-import { useState } from 'react';
-import { login } from '../services/login';
+import Button from '../../shared/components/Button';
+import useAuth from '../hook/useAuth';
 
 function LoginForm() {
   const [errorMessage, setErrorMessage] = useState('');
@@ -15,9 +15,11 @@ function LoginForm() {
 
   const navigate = useNavigate();
 
+  const { singin } = useAuth();
+
   const onValid = async (formData) => {
     try {
-      const { data, error } = await login(formData.username, formData.password);
+      const { error } = await singin(formData.username, formData.password);
 
       if (error) {
         setErrorMessage(error.frontendErrorMessage);
@@ -25,9 +27,7 @@ function LoginForm() {
         return;
       }
 
-      localStorage.setItem('token', data.token);
-
-      navigate('/orders');
+      navigate('/admin');
     } catch (error) {
       console.error(error);
       setErrorMessage('Llame a soporte');
@@ -65,6 +65,7 @@ function LoginForm() {
       />
 
       <Button type='submit'>Iniciar Sesión</Button>
+      <Button variant='secondary' onClick={() => alert('Debe impletar navegacion y pagina de registro')}>Registrar Usuario</Button>
       {errorMessage && <p className='text-red-500'>{errorMessage}</p>}
     </form>
   );
