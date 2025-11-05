@@ -2,7 +2,7 @@
 
 @layer base {
   button {
-    @apply border-gray-100 border-solid border bg-gray-300 p-1 cursor-pointer rounded-md shadow;
+    @apply p-1 cursor-pointer rounded-md shadow;
   }
 
   input {
