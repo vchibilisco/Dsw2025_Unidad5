@@ -27,7 +27,7 @@ function LoginForm() {
         return;
       }
 
-      navigate('/admin');
+      navigate('/admin/home');
     } catch (error) {
       console.error(error);
       setErrorMessage('Llame a soporte');

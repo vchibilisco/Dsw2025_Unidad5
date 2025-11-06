@@ -4,13 +4,11 @@ import { login } from '../services/login';
 const AuthContext = createContext();
 
 function AuthProvider({ children }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  useState(() => {
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
     const token = localStorage.getItem('token');
 
-    setIsAuthenticated(Boolean(token));
-  }, []);
+    return Boolean(token);
+  });
 
   const singout = () => {
     localStorage.clear();

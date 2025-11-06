@@ -2,10 +2,14 @@
 
 @layer base {
   button {
-    @apply p-1 cursor-pointer rounded-md shadow;
+    @apply p-1 cursor-pointer rounded-md shadow overflow-hidden;
   }
 
   input {
+    @apply border border-gray-200 rounded-md p-1.5 hover:shadow;
+  }
+
+  select {
     @apply border border-gray-200 rounded-md p-1.5 hover:shadow;
   }
 }

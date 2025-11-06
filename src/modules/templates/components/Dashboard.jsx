@@ -116,6 +116,7 @@ function Dashboard() {
       <main
         className="
           p-5
+          overflow-y-scroll
         "
       >
         <Outlet />
