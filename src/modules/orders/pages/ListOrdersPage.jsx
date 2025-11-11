@@ -1,12 +1,118 @@
+import { useEffect, useState } from 'react';
 import Card from '../../shared/components/Card';
+import Button from '../../shared/components/Button';
+import { listOrders } from '../../orders/services/listServices';
 
 function ListOrdersPage() {
-  return (
-    <>
-      <Card>Listar Ordenes</Card>
-    </>
+  const [orders, setOrders] = useState([]);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
 
+  useEffect(() => {
+    const fetchOrders = async () => {
+      setLoading(true);
+      const { data, error } = await listOrders();
+
+      if (error) {
+        setError(error.message || 'Error al cargar las órdenes');
+      } else {
+        
+        setOrders(data.items || data.results || data);
+      }
+
+      setLoading(false);
+    };
+
+    fetchOrders();
+  }, []);
+
+  return (
+    <div>
+      <Card>
+        <div className="flex justify-between items-center mb-3">
+          <h1 className="text-3xl">Órdenes</h1>
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex items-center gap-3">
+            <input
+              type="text"
+              placeholder="Buscar"
+              className="text-[1.3rem] w-full"
+            />
+            <Button className="h-11 w-11">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M15.7955 15.8111L21 21M18 10.5C18 14.6421 14.6421 18 10.5 18C6.35786 18 3 14.6421 3 10.5C3 6.35786 6.35786 3 10.5 3C14.6421 3 18 6.35786 18 10.5Z"
+                  stroke="#000000"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                ></path>
+              </svg>
+            </Button>
+          </div>
+
+          <select className="text-[1.3rem]">
+            <option value="all">Estados de Órdenes</option>
+            <option value="pending">Pendientes</option>
+            <option value="processing">Procesadas</option>
+            <option value="shipped">Enviadas</option>
+            <option value="delivered">Entregadas</option>
+            <option value="cancelled">Canceladas</option>
+          </select>
+        </div>
+      </Card>
+
+      {/* 🔹 Estado de carga o error */}
+      {loading && <p className="mt-4 text-lg">Cargando órdenes...</p>}
+      {error && <p className="mt-4 text-red-500">{error}</p>}
+
+      {/* 🔹 Listado dinámico */}
+      {!loading && !error && (
+        <div className="mt-4 flex flex-col gap-4">
+          {orders.length === 0 ? (
+            <p className="text-lg text-gray-600">No hay órdenes para mostrar.</p>
+          ) : (
+            orders.map((order, index) => (
+              <Card key={order.id || index}>
+                <h1 className="text-xl font-semibold">
+                  #{index + 1} - Cliente: {order.customerId}
+                </h1>
+                <p className="text-base text-gray-700">
+                  Dirección de envío: {order.shippingAddress}
+                </p>
+                <p className="text-base text-gray-700">
+                  Dirección de facturación: {order.billingAddress}
+                </p>
+                <p className="text-base text-gray-700">
+                  Notas: {order.notes || 'Sin notas'}
+                </p>
+
+                {/* 🔹 Mostramos también los productos */}
+                {order.orderItems && order.orderItems.length > 0 && (
+                  <div className="mt-2">
+                    <h2 className="font-semibold">Productos:</h2>
+                    <ul className="list-disc pl-6">
+                      {order.orderItems.map((item, i) => (
+                        <li key={i}>
+                          Producto: {item.productId} | Cantidad: {item.quantity}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </Card>
+            ))
+          )}
+        </div>
+      )}
+    </div>
   );
-};
+}
 
 export default ListOrdersPage;
