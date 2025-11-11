@@ -1,19 +1,33 @@
-export const listOrders = async () => {
-  const response = await fetch('/api/orders', {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${localStorage.getItem('token')}`,
-    },
-  });
+// src/orders/services/listServices.js
+export const listOrders = async (status = '', customerId = '') => {
+  try {
+    const queryParams = new URLSearchParams();
 
-  if (response.ok) {
-    const data = await response.json();
+    if (status && status !== 'all') queryParams.append('status', status);
+    if (customerId) queryParams.append('customerId', customerId);
 
-    return { data, error: null };
-  } else {
-    const error = await response.json();
+    const url = `/api/orders${queryParams.toString() ? `?${queryParams}` : ''}`;
 
-    return { data: null, error };
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+      },
+    });
+
+    const text = await response.text();
+    const data = text ? JSON.parse(text) : null;
+
+    if (!response.ok) {
+      throw new Error(data?.message || 'Error al cargar las órdenes');
+    }
+
+    // 🔹 Si no hay data o está vacía, devolvemos lista vacía controlada
+    const items = data?.items || data?.results || data || [];
+    return { data: Array.isArray(items) ? items : [], error: null };
+  } catch (error) {
+    console.error('Error al listar órdenes:', error);
+    return { data: [], error };
   }
 };

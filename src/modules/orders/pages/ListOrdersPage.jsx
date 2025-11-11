@@ -7,24 +7,33 @@ function ListOrdersPage() {
   const [orders, setOrders] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [customerId, setCustomerId] = useState('');
+  const [searchCustomerId, setSearchCustomerId] = useState('');
 
   useEffect(() => {
     const fetchOrders = async () => {
       setLoading(true);
-      const { data, error } = await listOrders();
+      const { data, error } = await listOrders(statusFilter, searchCustomerId);
 
       if (error) {
         setError(error.message || 'Error al cargar las órdenes');
+        setOrders([]);
       } else {
-        
-        setOrders(data.items || data.results || data);
+        setOrders(data);
+        setError(null);
       }
 
       setLoading(false);
     };
 
     fetchOrders();
-  }, []);
+  }, [statusFilter, searchCustomerId]);
+
+  const handleSearch = () => {
+    // 🔹 Si está vacío, mostramos todas
+    setSearchCustomerId(customerId.trim());
+  };
 
   return (
     <div>
@@ -34,13 +43,16 @@ function ListOrdersPage() {
         </div>
 
         <div className="flex flex-col sm:flex-row gap-4">
+          {/* 🔹 Filtro por ID de cliente */}
           <div className="flex items-center gap-3">
             <input
               type="text"
-              placeholder="Buscar"
+              placeholder="Buscar por ID de cliente"
               className="text-[1.3rem] w-full"
+              value={customerId}
+              onChange={(e) => setCustomerId(e.target.value)}
             />
-            <Button className="h-11 w-11">
+            <Button className="h-11 w-11" onClick={handleSearch}>
               <svg
                 viewBox="0 0 24 24"
                 fill="none"
@@ -57,8 +69,13 @@ function ListOrdersPage() {
             </Button>
           </div>
 
-          <select className="text-[1.3rem]">
-            <option value="all">Estados de Órdenes</option>
+          {/* 🔹 Filtro por estado */}
+          <select
+            className="text-[1.3rem]"
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+          >
+            <option value="all">Todos los estados</option>
             <option value="pending">Pendientes</option>
             <option value="processing">Procesadas</option>
             <option value="shipped">Enviadas</option>
@@ -76,13 +93,16 @@ function ListOrdersPage() {
       {!loading && !error && (
         <div className="mt-4 flex flex-col gap-4">
           {orders.length === 0 ? (
-            <p className="text-lg text-gray-600">No hay órdenes para mostrar.</p>
+            <p className="text-lg text-gray-600">No hay órdenes que coincidan con el filtro.</p>
           ) : (
             orders.map((order, index) => (
               <Card key={order.id || index}>
                 <h1 className="text-xl font-semibold">
-                  #{index + 1} - Cliente: {order.customerId}
+                  #{order.id} - Cliente: {order.customerId}
                 </h1>
+                <p className="text-base text-gray-700">
+                  Estado: <span className="font-semibold">{order.status}</span>
+                </p>
                 <p className="text-base text-gray-700">
                   Dirección de envío: {order.shippingAddress}
                 </p>
@@ -93,17 +113,19 @@ function ListOrdersPage() {
                   Notas: {order.notes || 'Sin notas'}
                 </p>
 
-                {/* 🔹 Mostramos también los productos */}
                 {order.orderItems && order.orderItems.length > 0 && (
                   <div className="mt-2">
-                    <h2 className="font-semibold">Productos:</h2>
-                    <ul className="list-disc pl-6">
+                    <h2 className="text-base text-gray-700 font-semibold">Productos:</h2>
+                    <div className="pl-4">
                       {order.orderItems.map((item, i) => (
-                        <li key={i}>
-                          Producto: {item.productId} | Cantidad: {item.quantity}
-                        </li>
+                        <p key={i} className="text-base text-gray-700">
+                          Producto:{' '}
+                          <span className="font-semibold">{item.productId}</span>{' '}
+                          | Cantidad:{' '}
+                          <span className="font-semibold">{item.quantity}</span>
+                        </p>
                       ))}
-                    </ul>
+                    </div>
                   </div>
                 )}
               </Card>
@@ -116,3 +138,4 @@ function ListOrdersPage() {
 }
 
 export default ListOrdersPage;
+
