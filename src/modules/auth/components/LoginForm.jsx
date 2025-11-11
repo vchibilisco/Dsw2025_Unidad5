@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Input from './Input';
 import Button from '../../shared/components/Button';
 import useAuth from '../hook/useAuth';
@@ -65,7 +65,7 @@ function LoginForm() {
       />
 
       <Button type='submit'>Iniciar Sesión</Button>
-      <Button variant='secondary' onClick={() => alert('Debe impletar navegacion y pagina de registro')}>Registrar Usuario</Button>
+      <Button type='button' onClick={() => navigate('/register')}>Registrarse</Button>
       {errorMessage && <p className='text-red-500'>{errorMessage}</p>}
     </form>
   );
