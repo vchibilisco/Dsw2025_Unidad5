@@ -4,7 +4,7 @@ import tailwindcss from '@tailwindcss/vite';
 
 export default ({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
-  const target = env.VITE_BACKEND_URL || 'http://localhost:7138/';
+  const target = env.VITE_BACKEND_URL || 'https://localhost:7138/';
 
   return defineConfig({
     server: {
