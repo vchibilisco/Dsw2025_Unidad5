@@ -1,12 +1,12 @@
 import { frontendErrorMessage } from '../helpers/backendError';
 
-export const login = async (username, password) => {
-  const response = await fetch('/api/auth/login', {
+export const register = async (username, password, email, role) => {
+  const response = await fetch('/api/auth/register', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ username, password }),
+    body: JSON.stringify({ username, password, email, role }),
   });
 
   if (!response.ok) {
@@ -21,7 +21,15 @@ export const login = async (username, password) => {
     };
   }
 
-  const token = await response.json();
+  let data = null;
 
-  return { data: token, error: null };
+  try {
+    const rawBody = await response.text();
+
+    data = rawBody ? JSON.parse(rawBody) : null;
+  } catch {
+    data = null;
+  }
+
+  return { data, error: null };
 };
