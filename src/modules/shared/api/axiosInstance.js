@@ -18,4 +18,20 @@ instance.interceptors.request.use(
   (error) => Promise.reject(error),
 );
 
+instance.interceptors.response.use(
+  (config) => { return config; },
+  (error) => {
+    if (error.status === 401) {
+      if (window.location.pathname.includes('/admin/')) {
+        localStorage.clear();
+        window.location.href = '/login';
+      } else {
+        localStorage.removeItem('token');
+      }
+    }
+
+    return Promise.reject(error);
+  },
+);
+
 export { instance };

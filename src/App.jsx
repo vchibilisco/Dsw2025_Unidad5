@@ -6,6 +6,7 @@ import ProtectedRoute from './modules/auth/components/ProtectedRoute';
 import ListOrdersPage from './modules/orders/pages/ListOrdersPage';
 import Home from './modules/home/pages/Home';
 import ListProductsPage from './modules/products/pages/ListProductsPage';
+import CreateProductPage from './modules/products/pages/CreateProductPage';
 
 function App() {
   const router = createBrowserRouter([
@@ -42,6 +43,10 @@ function App() {
         {
           path: '/admin/products',
           element: <ListProductsPage />,
+        },
+        {
+          path: '/admin/products/create',
+          element: <CreateProductPage />,
         },
         {
           path: '/admin/orders',

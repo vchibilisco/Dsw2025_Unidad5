@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-import Input from './Input';
+import Input from '../../shared/components/Input';
 import Button from '../../shared/components/Button';
 import useAuth from '../hook/useAuth';
+import { frontendErrorMessage } from '../helpers/backendError';
 
 function LoginForm() {
   const [errorMessage, setErrorMessage] = useState('');
@@ -29,8 +30,11 @@ function LoginForm() {
 
       navigate('/admin/home');
     } catch (error) {
-      console.error(error);
-      setErrorMessage('Llame a soporte');
+      if (error?.response?.data?.code) {
+        setErrorMessage(frontendErrorMessage[error?.response?.data?.code]);
+      } else {
+        setErrorMessage('Llame a soporte');
+      }
     }
   };
 

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Button from '../../shared/components/Button';
 import Card from '../../shared/components/Card';
 import { getProducts } from '../services/list';
@@ -10,6 +11,8 @@ const productStatus = {
 };
 
 function ListProductsPage() {
+  const navigate = useNavigate();
+
   const [ searchTerm, setSearchTerm ] = useState('');
   const [ status, setStatus ] = useState(productStatus.ALL);
   const [ pageNumber, setPageNumber ] = useState(1);
@@ -59,7 +62,10 @@ function ListProductsPage() {
             <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" strokeWidth="0"></g><g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M5 11C4.44772 11 4 10.5523 4 10C4 9.44772 4.44772 9 5 9H15C15.5523 9 16 9.44772 16 10C16 10.5523 15.5523 11 15 11H5Z" fill="#000000"></path> <path d="M9 5C9 4.44772 9.44772 4 10 4C10.5523 4 11 4.44772 11 5V15C11 15.5523 10.5523 16 10 16C9.44772 16 9 15.5523 9 15V5Z" fill="#000000"></path> </g></svg>
           </Button>
 
-          <Button className='hidden sm:block'>
+          <Button
+            className='hidden sm:block'
+            onClick={() => navigate('/admin/products/create')}
+          >
             Crear Producto
           </Button>
         </div>
@@ -94,23 +100,36 @@ function ListProductsPage() {
         }
       </div>
 
-      <div>
+      <div className='flex justify-center items-center mt-3'>
+        <button
+          disabled={pageNumber === 1}
+          onClick={() => setPageNumber(pageNumber - 1)}
+          className='bg-gray-200 disabled:bg-gray-100'
+        >
+          Atras
+        </button>
+        <span>{pageNumber} / {totalPages}</span>
+        <button
+          disabled={ pageNumber === totalPages }
+          onClick={() => setPageNumber(pageNumber + 1)}
+          className='bg-gray-200 disabled:bg-gray-100'
+        >
+          Siguiente
+        </button>
+
         <select
           value={pageSize}
           onChange={evt => {
             setPageNumber(1);
             setPageSize(Number(evt.target.value));
           }}
+          className='ml-3'
         >
           <option value="2">2</option>
           <option value="10">10</option>
           <option value="15">15</option>
           <option value="20">20</option>
         </select>
-
-        <button disabled={pageNumber === 1} onClick={() => setPageNumber(pageNumber - 1)}>Atras</button>
-        <span>{pageNumber} / {totalPages}</span>
-        <button disabled={ pageNumber === totalPages } onClick={() => setPageNumber(pageNumber + 1)}>Siguiente</button>
       </div>
     </div>
 
