@@ -1,27 +1,7 @@
-import { frontendErrorMessage } from '../helpers/backendError';
+import { instance } from '../../shared/api/axiosInstance';
 
 export const login = async (username, password) => {
-  const response = await fetch('/api/auth/login', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ username, password }),
-  });
+  const response = await instance.post('api/auth/login', { username, password });
 
-  if (!response.ok) {
-    const errorData = await response.json();
-
-    return {
-      data: null,
-      error: {
-        ...errorData,
-        frontendErrorMessage: frontendErrorMessage[errorData.code],
-      },
-    };
-  }
-
-  const token = await response.json();
-
-  return { data: token, error: null };
+  return { data: response.data.token, error: null };
 };

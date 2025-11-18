@@ -23,7 +23,7 @@ function AuthProvider({ children }) {
       return { error };
     }
 
-    localStorage.setItem('token', data.token);
+    localStorage.setItem('token', data);
     setIsAuthenticated(true);
 
     return { error: null };
