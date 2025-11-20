@@ -6,7 +6,8 @@ export const createProduct = async (formData) => {
     internalCode: formData.cui,
     name: formData.name,
     description: formData.description,
-    currentUnitPrice: formData.price,
-    stockQuantity: formData.stock,
+    price: formData.price,
+    stock: formData.stock,
+
   });
 };

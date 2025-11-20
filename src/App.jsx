@@ -7,26 +7,39 @@ import ListOrdersPage from './modules/orders/pages/ListOrdersPage';
 import Home from './modules/home/pages/Home';
 import ListProductsPage from './modules/products/pages/ListProductsPage';
 import CreateProductPage from './modules/products/pages/CreateProductPage';
+import ClientDashboard from './modules/templates/components/ClientDashboard';
+import ShoppingCart from './modules/products/pages/ShoppingCart';
+import CartItem from './modules/products/components/CartItem';
+import ListProductCustomer from './modules/products/components/ListProductCustomer';
+import RegisterForm from './modules/auth/components/RegisterForm';
 
 function App() {
   const router = createBrowserRouter([
     {
       path: '/',
-      element: <><Outlet /></>,
+      element: <><ClientDashboard /></>,
       children: [
         {
           path: '/',
-          element: <>Listado de productos</>,
+          element: <ListProductCustomer  />,
         },
         {
           path: '/cart',
-          element: <>Carrito de compras</>,
+          element: <ShoppingCart />,
         },
       ],
     },
     {
       path: '/login',
       element: <LoginPage />,
+    },
+    {
+      path: '/register',
+      element: <RegisterForm />,
+    },
+    {
+      path: '/products',
+      element: <ClientDashboard />,
     },
     {
       path: '/admin',
