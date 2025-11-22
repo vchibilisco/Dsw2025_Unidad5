@@ -8,10 +8,10 @@ function Dashboard() {
 
   const navigate = useNavigate();
 
-  const { singout } = useAuth();
+  const { signout } = useAuth();
 
   const logout = () => {
-    singout();
+    signout();
     navigate('/login');
   };
 

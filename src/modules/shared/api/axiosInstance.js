@@ -19,9 +19,11 @@ instance.interceptors.request.use(
 );
 
 instance.interceptors.response.use(
-  (config) => { return config; },
+  (response) => response,
   (error) => {
-    if (error.status === 401) {
+    const status = error.response?.status;
+
+    if (status === 401) {
       if (window.location.pathname.includes('/admin/')) {
         localStorage.clear();
         window.location.href = '/login';
@@ -31,7 +33,7 @@ instance.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  },
+  }
 );
 
 export { instance };

@@ -3,57 +3,63 @@ import { getCart, removeFromCart, updateCartItemQuantity, clearCart } from '../C
 import Card from '../../shared/components/Card';
 import ProductPlaceholder from '../components/ProductPlaceholder';
 import { createOrder } from '../../orders/services/orderCreateService';
+import useAuth from '../../auth/hook/useAuth';
+import { useOutletContext } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import LoginForm from '../../auth/components/LoginForm';
+import RegisterForm from '../../auth/components/RegisterForm';
 
 function ShoppingCart() {
-
   const [cartItems, setCartItems] = useState([]);
+  const { isAuthenticated, customerId } = useAuth();
 
-  useEffect(() => {
-    const items = getCart();
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showRegisterModal, setShowRegisterModal] = useState(false);
+  const navigate = useNavigate();
 
-    setCartItems(items);
-  }, []);
+  const { cartVersion } = useOutletContext();
+
+useEffect(() => {
+  const items = JSON.parse(localStorage.getItem('cart') || '[]');
+  setCartItems(items);
+}, [cartVersion]);
 
   const handleQuantityChange = (sku, delta) => {
+    const updatedItems = cartItems
+      .map((item) => {
+        if (item.sku !== sku) return item;
 
-    const updatedItems = cartItems.map((item) => {
+        const newQuantity = Math.max(0, item.quantity + delta);
 
-      if (item.sku !== sku) return item;
-
-      const newQuantity = Math.max(0, item.quantity + delta);
-
-      if (newQuantity === 0) {
-
-        removeFromCart(sku);
-
-        return null;
-
-      } else {
-
-        updateCartItemQuantity(sku, newQuantity);
-
-        return { ...item, quantity: newQuantity };
-      }
-    }).filter(Boolean);
+        if (newQuantity === 0) {
+          removeFromCart(sku);
+          return null;
+        } else {
+          updateCartItemQuantity(sku, newQuantity);
+          return { ...item, quantity: newQuantity };
+        }
+      })
+      .filter(Boolean);
 
     setCartItems(updatedItems);
   };
 
   const handleDelete = (sku) => {
-
     removeFromCart(sku);
     setCartItems((prev) => prev.filter((item) => item.sku !== sku));
   };
 
   const handleCheckout = async () => {
-
-    const customerId = 'c2a45638-534c-48ca-9dbc-243c77f3edb7'//localStorage.getItem('idCustomer');
+    if (!isAuthenticated) {
+      setShowLoginModal(true);
+      return;
+    }
 
     const cartItems = getCart();
-
+    
     if (!customerId || cartItems.length === 0) {
+      
       alert('No se puede procesar la orden: faltan datos');
-
       return;
     }
 
@@ -62,7 +68,6 @@ function ShoppingCart() {
       quantity: item.quantity,
       currentunitPrice: item.currentUnitPrice,
       name: item.name,
-
     }));
 
     const payload = {
@@ -78,13 +83,13 @@ function ShoppingCart() {
       clearCart();
       setCartItems([]);
       alert('Orden creada correctamente');
+      navigate('/');
     } else {
       alert(`Error al crear orden: ${error?.message}`);
     }
   };
 
   const totalQuantity = cartItems.reduce((acc, item) => acc + item.quantity, 0);
-
   const totalAmount = cartItems.reduce(
     (acc, item) => acc + (Number(item.currentUnitPrice) || 0) * item.quantity,
     0,
@@ -125,8 +130,7 @@ function ShoppingCart() {
             <div className="text-gray-600">Cantidad en total: {totalQuantity}</div>
             <div className="text-gray-600">Total a pagar: ${totalAmount.toFixed(2)}</div>
             <button
-              onClick={() => { handleCheckout(); }}
-
+              onClick={handleCheckout}
               className="mt-3 bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700"
             >
               Finalizar Compra
@@ -134,6 +138,52 @@ function ShoppingCart() {
           </div>
         </Card>
       </div>
+      {showLoginModal && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/30">
+    <div className="w-full max-w-md relative">
+      <button
+        className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+        onClick={() => setShowLoginModal(false)}
+      >
+        &#10005;
+      </button>
+      <LoginForm
+        onSuccess={(action) => {
+          if (action === 'register') {
+            setShowLoginModal(false);
+            setShowRegisterModal(true); 
+          } else {
+            setShowLoginModal(false);   
+          }
+        }}
+      />
+    </div>
+  </div>
+)}
+{/* Modal Register */}
+      {showRegisterModal && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/30">
+    <div className="w-full max-w-md relative">
+      <button
+        className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+        onClick={() => setShowRegisterModal(false)}
+      >
+        &#10005;
+      </button>
+      <RegisterForm
+        onSuccess={(action) => {
+          if (action === 'login') {
+            setShowRegisterModal(false);
+            setShowLoginModal(true); 
+          } else {
+            setShowRegisterModal(false);
+          }
+        }}
+      />
+    </div>
+  </div>
+)}
+
     </div>
   );
 }

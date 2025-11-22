@@ -86,8 +86,8 @@ function CreateProductForm() {
           type='number'
           {...register('price', {
             min: {
-              value: 0,
-              message: 'No puede tener un precio negativo',
+              value: 1,
+              message: 'No puede tener un precio negativo ni ser 0',
             },
           })}
         />

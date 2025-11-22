@@ -6,7 +6,7 @@ import Button from '../../shared/components/Button';
 import useAuth from '../hook/useAuth';
 import { frontendErrorMessage } from '../helpers/backendError';
 
-function RegisterForm() {
+function RegisterForm({ onSuccess }) {
   const [errorMessage, setErrorMessage] = useState('');
   const {
     register,
@@ -42,17 +42,29 @@ function RegisterForm() {
       const { error } = await signup(payload);
 
       if (error) {
-        setErrorMessage(error.frontendErrorMessage || 'Error al registrar');
+        setErrorMessage(error.frontendErrorMessage || 'Nombre de Usuario ya existe');
 
         return;
       }
 
-      navigate('/login');
+      if (onSuccess) {
+  onSuccess(); // Cierra el modal si se usa como modal
+} else {
+  navigate('/login'); // Redirige si se usa como página tradicional
+}
     } catch (error) {
-      const code = error?.response?.data?.code;
+  const data = error?.response?.data;
 
-      setErrorMessage(code ? frontendErrorMessage[code] : 'Llame a soporte');
-    }
+  if (Array.isArray(data) && data.length > 0) {
+    // Usa la descripción que viene del backend
+    setErrorMessage(data[0].description);
+  } else if (data?.code) {
+    setErrorMessage(frontendErrorMessage[data.code] || 'Nombre de Usuario ya existe');
+  } else {
+    setErrorMessage('Llame a soporte');
+  }
+}
+
   };
 
   return (
@@ -166,13 +178,19 @@ function RegisterForm() {
             Registrar Usuario
           </Button>
           <Button
-            variant="secondary"
-            type="button"
-            className="w-full sm:w-auto text-xs"
-            onClick={() => navigate('/login')}
-          >
-            Iniciar Sesión
-          </Button>
+  variant="secondary"
+  type="button"
+  className="w-full sm:w-auto text-xs"
+  onClick={() => {
+    if (onSuccess) {
+      onSuccess('login'); // Cierra el registro y abre el login
+    } else {
+      navigate('/login');
+    }
+  }}
+>
+   Iniciar Sesión
+</Button>
         </div>
 
         {errorMessage && (

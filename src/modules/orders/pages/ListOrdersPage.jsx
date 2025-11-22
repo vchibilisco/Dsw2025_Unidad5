@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Button from '../../shared/components/Button';
 import Card from '../../shared/components/Card';
-import { getOrders } from '../services/listServices';
+import { getOrdersWithCustomerName } from '../services/listServices';
 
 const orderStatus = {
   ALL: 'ALL',
@@ -31,49 +31,58 @@ function ListOrdersPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [status, setStatus] = useState(orderStatus.ALL);
   const [pageNumber, setPageNumber] = useState(1);
-  const [pageSize, setPageSize] = useState(1);
+  const [pageSize] = useState(3);
   const [total, setTotal] = useState(0);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const fetchOrders = async () => {
-    try {
-      setLoading(true);
-      const { data, error } = await getOrders(searchTerm, status, pageNumber, pageSize);
-      if (error) throw error;
+  try {
+    setLoading(true);
+    const { data, error } = await getOrdersWithCustomerName(searchTerm, status, pageNumber, pageSize);
+    if (error) throw error;
 
-      setOrders(Array.isArray(data.orderItems) ? data.orderItems : []);
-      setTotal(typeof data.total === 'number' ? data.total : 0);
-    } catch (error) {
-      console.error('Error al obtener órdenes:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    console.log('Respuesta de getOrdersWithCustomerName:', data);
+
+    setOrders(Array.isArray(data.orders) ? data.orders : []);
+    setTotal(typeof data.total === 'number' ? data.total : 0);
+  } catch (error) {
+    console.error('Error al obtener órdenes:', error);
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
     fetchOrders();
   }, [status, pageNumber, pageSize]);
 
   const totalPages = Math.ceil(total / pageSize);
+  
   const getVisiblePages = () => {
-    const maxVisible = 2;
     const pages = [];
 
-    let startPage = Math.max(1, pageNumber - Math.floor(maxVisible / 2));
-    let endPage = startPage + maxVisible - 1;
-
-    if (endPage > totalPages) {
-      endPage = totalPages;
-      startPage = Math.max(1, endPage - maxVisible + 1);
+  if (totalPages <= 3) {
+    // Mostrar todas si son 3 o menos
+    for (let i = 1; i <= totalPages; i++) pages.push(i);
+  } else if (totalPages === 4) {
+    if (pageNumber <= 2) {
+      pages.push(1, 2, '…', 4);
+    } else {
+      pages.push(2, 3, 4);
     }
-
-    for (let i = startPage; i <= endPage; i++) {
-      pages.push(i);
+  } else {
+    if (pageNumber <= 2) {
+      pages.push(1, 2, '…', totalPages);
+    } else if (pageNumber >= totalPages - 1) {
+      pages.push(1, '…', totalPages - 1, totalPages);
+    } else {
+      pages.push(pageNumber - 1, pageNumber, pageNumber + 1);
     }
+  }
 
-    return pages;
-  };
+  return pages;
+};
 
   const visiblePages = getVisiblePages();
 
@@ -93,7 +102,7 @@ function ListOrdersPage() {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               type="text"
-              placeholder="Buscar por CustomerId"
+              placeholder="Buscar por CustomerName"
               className="text-[1.2rem] border px-3 py-2 w-full lg:w-64"
             />
             <Button onClick={handleSearch} className="h-11 w-11">
@@ -127,7 +136,7 @@ function ListOrdersPage() {
 
             <Card key={order.orderId} className="flex justify-between items-center px-4 py-3">
               <div>
-                <h2 className="text-xl font-semibold">{order.orderId} - {order.customerId}</h2>
+                <h2 className="text-xl font-semibold">{order.orderId} - {order.customerName}</h2>
                 <p className="text-base">Estado: {mapOrderStatus(order.orderStatus)}</p>
               </div>
               <Button onClick={() => setSelectedOrder(order)}>Ver</Button>
@@ -145,27 +154,21 @@ function ListOrdersPage() {
           ← Anterior
         </button>
 
-        <div className='hidden sm:flex gap-2'>
-          {visiblePages.map((page) => (
-            <button
-              key={page}
-              onClick={() => setPageNumber(page)}
-              className={`px-3 py-1 ${pageNumber === page ? 'bg-purple-500 text-white' : 'bg-gray-200'}`}
-            >
-              {page}
-            </button>
-          ))}
-
-          {totalPages > 5 && !visiblePages.includes(totalPages) && <span>…</span>}
-          {totalPages > 5 && !visiblePages.includes(totalPages) && (
-            <button
-              onClick={() => setPageNumber(totalPages)}
-              className={`px-3 py-1 ${pageNumber === totalPages ? 'bg-purple-500 text-white' : 'bg-gray-200'}`}
-            >
-              {totalPages}
-            </button>
-          )}
-        </div>
+        <div className="hidden sm:flex gap-2">
+  {visiblePages.map((page, idx) =>
+    typeof page === 'number' ? (
+      <button
+        key={idx}
+        onClick={() => setPageNumber(page)}
+        className={`px-3 py-1 ${pageNumber === page ? 'bg-purple-500 text-white' : 'bg-gray-200'}`}
+      >
+        {page}
+      </button>
+    ) : (
+      <span key={idx} className="px-3 py-1">…</span>
+    )
+  )}
+</div>
 
 
         <button
@@ -180,7 +183,7 @@ function ListOrdersPage() {
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
             <h2 className="text-xl font-bold mb-2">Orden {selectedOrder.orderId}</h2>
-            <p><strong>Cliente:</strong> {selectedOrder.customerId}</p>
+            <p><strong>Cliente:</strong> {selectedOrder.customerName}</p>
             <p><strong>Fecha:</strong> {new Date(selectedOrder.date).toLocaleString()}</p>
             <p><strong>Dirección:</strong> {selectedOrder.billingAddress}</p>
             <p><strong>Notas:</strong> {selectedOrder.notes || 'Sin notas'}</p>
@@ -190,7 +193,8 @@ function ListOrdersPage() {
               <h3 className="font-semibold mb-2">Items:</h3>
               {selectedOrder.orderItems.map((item, index) => (
                 <div key={index} className="mb-2 border-b pb-2">
-                  <p><strong>Producto:</strong> {item.name || item.productId}</p>
+                  <p><strong>Producto:</strong> {item.name }</p>
+                  <p><strong>Producto ID:</strong> {item.productId}</p>
                   <p><strong>Cantidad:</strong> {item.quantity}</p>
                   <p><strong>Precio unitario:</strong> ${item.unitPrice}</p>
                 </div>

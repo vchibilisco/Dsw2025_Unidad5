@@ -6,7 +6,7 @@ import Button from '../../shared/components/Button';
 import useAuth from '../hook/useAuth';
 import { frontendErrorMessage } from '../helpers/backendError';
 
-function LoginForm() {
+function LoginForm({ onSuccess }) {
   const [errorMessage, setErrorMessage] = useState('');
   const {
     register,
@@ -16,11 +16,11 @@ function LoginForm() {
 
   const navigate = useNavigate();
 
-  const { singin } = useAuth();
+  const { signin } = useAuth();
 
   const onValid = async (formData) => {
     try {
-      const { error } = await singin(formData.username, formData.password);
+      const { error } = await signin(formData.username, formData.password);
 
       if (error) {
         setErrorMessage(error.frontendErrorMessage);
@@ -28,11 +28,18 @@ function LoginForm() {
         return;
       }
 
-      navigate('/admin/home');
+      if (onSuccess) {
+        onSuccess(); // Cierra el modal si se usa como modal
+      } else {
+        navigate('/admin/home'); // Redirige si se usa en la ruta normal
+      }
     } catch (error) {
       if (error?.response?.data?.code) {
         setErrorMessage(frontendErrorMessage[error?.response?.data?.code]);
-      } else {
+      } else if (error?.response?.data) {
+    
+    setErrorMessage('Usuario o contraseña incorrectos');
+  } else {
         setErrorMessage('Llame a soporte');
       }
     }
@@ -69,7 +76,19 @@ function LoginForm() {
       />
 
       <Button type='submit'>Iniciar Sesión</Button>
-      <Button variant='secondary' onClick={() => navigate('/register') }>Registrar Usuario</Button>
+      <Button
+  variant='secondary'
+  type='button'
+  onClick={() => {
+    if (onSuccess) {
+      onSuccess('register'); // Indica que se quiere abrir el registro
+    } else {
+      navigate('/signup'); // Ruta tradicional
+    }
+  }}
+>
+  Registrar Usuario
+</Button>
       {errorMessage && <p className='text-red-500'>{errorMessage}</p>}
     </form>
   );

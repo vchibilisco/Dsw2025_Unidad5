@@ -11,20 +11,31 @@ function AuthProvider({ children }) {
     return Boolean(token);
   });
 
-  const singout = () => {
+  const [role, setRole] = useState(localStorage.getItem('role'));
+
+  const [customerId, setCustomerId] = useState(localStorage.getItem('customerId'));
+
+  const signout = () => {
     localStorage.clear();
     setIsAuthenticated(false);
+    setRole(null);
+    setCustomerId(null);
   };
 
-  const singin = async (username, password) => {
+  const signin = async (username, password) => {
     const { data, error } = await login(username, password);
 
     if (error) {
       return { error };
     }
 
-    localStorage.setItem('token', data);
+    localStorage.setItem('token', data.token);
+    localStorage.setItem('role', data.role);
+    localStorage.setItem('customerId', data.customerId);
+
     setIsAuthenticated(true);
+    setRole(data.role);
+    setCustomerId(data.customerId);
 
     return { error: null };
   };
@@ -50,9 +61,12 @@ function AuthProvider({ children }) {
     <AuthContext.Provider
       value={{
         isAuthenticated,
-        singin,
-        singout,
+        signin,
+        signout,
         signup,
+        role,
+        customerId,
+
       }}
     >
       {children}
