@@ -1,12 +1,11 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
 import Input from '../../shared/components/Input';
 import Button from '../../shared/components/Button';
 import useAuth from '../hook/useAuth';
 import { frontendErrorMessage } from '../helpers/backendError';
 
-function RegisterForm() {
+function UserRegisterForm({ onSuccess }) {
   const [errorMessage, setErrorMessage] = useState('');
   const {
     register,
@@ -26,7 +25,7 @@ function RegisterForm() {
   });
 
   const { signup } = useAuth();
-  const navigate = useNavigate();
+
 
   const onValid = async (formData) => {
     const payload = {
@@ -46,29 +45,26 @@ function RegisterForm() {
 
         return;
       }
-
-      
-  navigate('/login'); // Redirige si se usa como página tradicional
+      onSuccess(); 
 
     } catch (error) {
-  const data = error?.response?.data;
-
-  if (Array.isArray(data) && data.length > 0) {
-    // Usa la descripción que viene del backend
-    setErrorMessage(data[0].description);
-  } else if (data?.code) {
-    setErrorMessage(frontendErrorMessage[data.code] || 'Nombre de Usuario ya existe');
-  } else {
-    setErrorMessage('Llame a soporte');
-  }
-}
+        const data = error?.response?.data;
+        if (Array.isArray(data) && data.length > 0) {
+            // Usa la descripción que viene del backend
+            setErrorMessage(data[0].description);
+        } else if (data?.code) {
+            setErrorMessage(frontendErrorMessage[data.code] || 'Nombre de Usuario ya existe');
+        } else {
+            setErrorMessage('Llame a soporte');
+        }
+    }
 
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-6">
+    
       <form
-        className="w-full max-w-sm flex flex-col gap-3 bg-white p-6 sm:p-10 rounded-lg shadow-lg"
+        className='w-full flex flex-col gap-4'
         onSubmit={handleSubmit(onValid)}
       >
         <Input
@@ -95,6 +91,7 @@ function RegisterForm() {
           error={errors.email?.message}
           className="text-xs p-2"
         />
+
         <Input
           label="Nombre completo"
           placeholder="Ingresar nombre"
@@ -105,38 +102,6 @@ function RegisterForm() {
           error={errors.name?.message}
           className="text-xs p-2"
         />
-
-        <div className="flex flex-col gap-1 w-full">
-          <label htmlFor="roles" className="text-sm             
-        font-medium 
-        text-gray-700 
-        mb-1
-        sm:text-base">
-            Rol:
-          </label>
-          <select
-            id="role"
-            {...register('role', { required: 'Rol es obligatorio' })} 
-            className="w-full
-      border border-gray-300 rounded-md
-      appearance-none
-      pr-8
-      px-2 py-1          
-      text-sm            
-      text-gray-700     
-      outline-none
-      bg-white           
-      focus:ring-1 focus:ring-purple-300 focus:border-purple-400
-      transition-all"
-          >
-            <option value="">Selecciona un rol</option>
-            <option value="Customer">Cliente</option> 
-            <option value="Admin">Admin</option>
-          </select>
-          {errors.role && (
-            <p className="text-red-500 text-xs">{errors.role.message}</p>
-          )}
-        </div>
 
         <Input
           label="Contraseña"
@@ -185,30 +150,18 @@ function RegisterForm() {
           className="text-xs p-2"
         />
 
-        <div className="flex flex-col gap-2 mt-2">
-          <Button type="submit" className="w-full sm:w-auto text-xs">
+        <div className="flex flex-col sm:flex-row gap-2 mt-2">
+          <Button type="submit" className="w-full  text-xs">
             Registrar Usuario
           </Button>
-          <Button
-  variant="secondary"
-  type="button"
-  className="w-full sm:w-auto text-xs"
-  onClick={() => {
-    
-      navigate('/login');
-    
-  }}
->
-   Iniciar Sesión
-</Button>
         </div>
 
         {errorMessage && (
           <p className="text-red-500 text-xs text-center">{errorMessage}</p>
         )}
       </form>
-    </div>
+    
   );
 }
 
-export default RegisterForm;
+export default UserRegisterForm;

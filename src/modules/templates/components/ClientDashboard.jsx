@@ -2,9 +2,8 @@ import { useState } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
 import Button from '../../shared/components/Button';
 import useAuth from '../../auth/hook/useAuth';
-import { useNavigate } from 'react-router-dom';
-import LoginForm from '../../auth/components/LoginForm';
-import RegisterForm from '../../auth/components/RegisterForm';
+import UserLoginForm from '../../auth/components/UserLoginForm';
+import UserRegisterForm from '../../auth/components/UserRegisterForm';
 import { searchCustomerProducts } from '../../products/services/listCustomer';
 
 
@@ -18,7 +17,6 @@ export default function ClientDashboard() {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showRegisterModal, setShowRegisterModal] = useState(false);
 
-  const navigate = useNavigate();
   const { isAuthenticated, signout } = useAuth();
 
   const getLinkStyles = ({ isActive }) => (
@@ -66,8 +64,12 @@ export default function ClientDashboard() {
         </Button>
       ) : (
         <>
-          <Button onClick={() => setShowLoginModal(true)}>Iniciar Sesión</Button>
-          <Button variant="secondary" onClick={() => setShowRegisterModal(true)}>Registrarse</Button>
+          <Button onClick={() => setShowLoginModal(true)}
+            className={mobile ? "w-full text-sm py-2 h-auto" : ""}
+            >Iniciar Sesión</Button>
+          <Button variant="secondary" onClick={() => setShowRegisterModal(true)}
+            className={mobile ? "w-full text-sm py-2 h-auto" : ""}
+            >Registrarse</Button>
         </>
       )}
     </div>
@@ -177,37 +179,49 @@ export default function ClientDashboard() {
       )}
 
       {showLoginModal && (
-  <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/30">
-    <div className="w-full max-w-md relative">
+  
+  <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/30 px-4">
+    
+    
+    <div className="relative w-full max-w-md bg-white rounded-lg shadow-lg p-6 sm:p-8">
+      
+      
       <button
-        className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+        className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 transition-colors"
         onClick={() => setShowLoginModal(false)}
       >
-        &#10005;
+    
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+        </svg>
       </button>
-      <LoginForm
+
+      <UserLoginForm
         onSuccess={(action) => {
-          if (action === 'register') {
-            setShowLoginModal(false);
-            setShowRegisterModal(true); 
-          } else {
-            setShowLoginModal(false);   
-          }
+           if (action === 'register') {
+             setShowLoginModal(false);
+             setShowRegisterModal(true);
+           } else {
+             setShowLoginModal(false);
+           }
         }}
       />
     </div>
   </div>
 )}
       {showRegisterModal && (
-  <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/30">
-    <div className="w-full max-w-md relative">
+  <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/30 px-4">
+    <div className="w-full max-w-md relative bg-white rounded-lg shadow-lg overflow-y-auto max-h-[90hv] p-6 sm:p-8">
       <button
-        className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+        className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 z-10"
         onClick={() => setShowRegisterModal(false)}
       >
-        &#10005;
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+        </svg>
       </button>
-      <RegisterForm
+      <div className='p-0'>
+        <UserRegisterForm
         onSuccess={(action) => {
           if (action === 'login') {
             setShowRegisterModal(false);
@@ -217,6 +231,8 @@ export default function ClientDashboard() {
           }
         }}
       />
+      </div>
+      
     </div>
   </div>
 )}

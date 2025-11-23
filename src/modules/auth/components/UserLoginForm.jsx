@@ -1,20 +1,17 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
 import Input from '../../shared/components/Input';
 import Button from '../../shared/components/Button';
 import useAuth from '../hook/useAuth';
 import { frontendErrorMessage } from '../helpers/backendError';
 
-function LoginForm() {
+function UserLoginForm({ onSuccess }) {
   const [errorMessage, setErrorMessage] = useState('');
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm({ defaultValues: { username: '', password: '' } });
-
-  const navigate = useNavigate();
 
   const { signin } = useAuth();
 
@@ -27,13 +24,13 @@ function LoginForm() {
 
         return;
       }
-      navigate('/admin/home');
+      onSuccess(); 
       
     } catch (error) {
       if (error?.response?.data?.code) {
         setErrorMessage(frontendErrorMessage[error?.response?.data?.code]);
       } else if (error?.response?.data) {
-
+    
     setErrorMessage('Usuario o contraseña incorrectos');
   } else {
         setErrorMessage('Llame a soporte');
@@ -46,11 +43,8 @@ function LoginForm() {
         flex
         flex-col
         gap-4
-        bg-white
-        p-8
-        sm:w-md
-        sm:rounded-lg
-        sm:shadow-lg
+        w-full
+        
       '
     onSubmit={handleSubmit(onValid)}
     >
@@ -70,20 +64,11 @@ function LoginForm() {
         error={errors.password?.message}
       />
 
-      <Button type='submit' className='w-full text-sm font-medium'>Iniciar Sesión</Button>
-      <Button
-      className='w-full text-sm font-medium'
-  variant='secondary'
-  type='button'
-  onClick={() => {
-      navigate('/signup');
-  }}
->
-  Registrar Usuario
-</Button>
+      <Button type='submit' className='w-full mt-2 text-sm font-medium'>Iniciar Sesión</Button>
+      
       {errorMessage && <p className='text-red-500'>{errorMessage}</p>}
     </form>
   );
 };
 
-export default LoginForm;
+export default UserLoginForm;
