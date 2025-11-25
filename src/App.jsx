@@ -8,6 +8,7 @@ import ListOrdersPage from './modules/orders/pages/ListOrdersPage';
 import Home from './modules/home/pages/Home';
 import ListProductsPage from './modules/products/pages/ListProductsPage';
 import ListProductsUserPage from './modules/products/pages/ListProductsUserPage';
+import CartPage from './modules/cart/pages/CartPage';
 import CreateProductPage from './modules/products/pages/CreateProductPage';
 
 function App() {
@@ -22,7 +23,7 @@ function App() {
         },
         {
           path: '/cart',
-          element: <>Carrito de compras</>,
+          element: <CartPage />,
         },
       ],
     },

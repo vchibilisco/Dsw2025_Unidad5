@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Button from '../../shared/components/Button';
 import Card from '../../shared/components/Card';
 import { getClientProducts } from '../services/listUser';
+import { useCart } from "../../shared/hooks/useCart";
 
 const productStatus = {
   ALL: 'all',
@@ -22,6 +23,13 @@ function ListProductsUserPage() {
   const [ products, setProducts ] = useState([]);
 
   const [loading, setLoading] = useState(false);
+
+  const { addToCart } = useCart();
+  const [quantities, setQuantities] = useState({});
+
+  const [openCartMenu, setOpenCartMenu] = useState(false);
+  const { cart } = useCart();
+  const totalItems = cart.reduce((acc, p) => acc + p.quantity, 0);
 
   const fetchProducts = async () => {
     try {
@@ -55,7 +63,69 @@ function ListProductsUserPage() {
         <div
           className='flex justify-between items-center mb-3'
         >
-          <h1 className='text-3xl'>Productos</h1>
+          <div className="flex items-center gap-4">
+            <h1 className='text-3xl'>Productos</h1>
+
+            {/* botón solo escritorio */}
+            <Button
+                className="hidden sm:block"
+                onClick={() => navigate("/cart")}
+            >
+                Carrito de Compras ({totalItems})
+            </Button>
+            </div>
+
+         {/* BOTÓN CARRITO MÓVIL */}
+            <button
+                className="sm:hidden text-3xl"
+                onClick={() => setOpenCartMenu(true)}
+            >
+                🛒
+            </button>
+
+                    {/* PANEL CARRITO MOBILE */}
+            <div
+            className={`
+                fixed top-0 right-0 h-full w-64 bg-white shadow-lg p-6
+                transition-transform duration-300
+                ${openCartMenu ? "translate-x-0" : "translate-x-full"}
+                sm:hidden
+            `}
+            >
+            <h2 className="text-xl mb-4">Carrito</h2>
+
+            <Button
+                className="mb-4 w-full"
+                onClick={() => {
+                setOpenCartMenu(false);
+                navigate("/cart");
+                }}
+            >
+                Ver carrito ({totalItems})
+            </Button>
+
+             <Button
+                className="text-xl mt-4"
+                onClick={() => setOpenCartMenu(false)}
+            >
+                Iniciar Sesión
+            </Button>
+
+             <Button
+                className="text-xl mt-4"
+                onClick={() => setOpenCartMenu(false)}
+            >
+                Registrarse
+            </Button>
+
+            <Button
+                className="text-xl mt-4"
+                onClick={() => setOpenCartMenu(false)}
+            >
+                Cerrar ✖
+            </Button>
+            </div>
+
           <Button
             className='h-11 w-11 rounded-2xl sm:hidden'
           >
@@ -64,9 +134,16 @@ function ListProductsUserPage() {
 
           <Button
             className='hidden sm:block'
-            onClick={() => navigate('/admin/products/create')}
+           // onClick={() => navigate('/admin/products/create')}
           >
-            Crear Producto
+            Iniciar Sesión
+          </Button>
+
+          <Button
+            className='hidden sm:block'
+           // onClick={() => navigate('/admin/products/create')}
+          >
+            Registrarse
           </Button>
         </div>
 
@@ -92,11 +169,33 @@ function ListProductsUserPage() {
           loading
             ? <span>Buscando datos...</span>
             : products.map(product => (
-              <Card key={product.sku}>
-                <h1>{product.sku} - {product.name}</h1>
-                <p className='text-base'>Stock: {product.stockQuantity} - ${product.currentUnitPrice} - {product.isActive ? 'Activado' : 'Desactivado'}</p>
-              </Card>
-            ))
+  <Card key={product.sku}>
+    <h1>{product.sku} - {product.name}</h1>
+    <p className='text-base'>
+      Stock: {product.stockQuantity} – ${product.currentUnitPrice}
+    </p>
+
+    <div className="flex gap-3 mt-3">
+      <input
+        type="number"
+        min="1"
+        value={quantities[product.sku] || 1}
+        onChange={(e) => setQuantities({
+          ...quantities,
+          [product.sku]: Number(e.target.value)
+        })}
+        className="w-20 border p-1"
+      />
+
+      <Button
+        onClick={() => addToCart(product, quantities[product.sku] || 1)}
+      >
+        Agregar
+      </Button>
+    </div>
+  </Card>
+))
+
         }
       </div>
 
