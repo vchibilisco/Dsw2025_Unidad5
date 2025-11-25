@@ -15,16 +15,16 @@ function Header() {
     navigate('/login')
   }
 
-  //const { singout } = useAuth();
+  const { singout } = useAuth();
 
-  /*const logout = () => {
+  const logout = () => {
     singout();
     navigate('/login');
-  };*/
+  };
 
-  /*const renderLogoutButton = (mobile = false) => (
+  const renderLogoutButton = (mobile = false) => (
     <Button className={`${mobile ? 'block w-full sm:hidden' :  'hidden sm:block' }`} onClick={logout}>Cerrar sesión</Button>
-  );*/
+  );
 
   const getLinkStyles = ({ isActive }) => (
     `
