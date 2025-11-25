@@ -97,10 +97,9 @@ function ListProductsUserPage() {
             <Button>Registrarse</Button>
         </div>
 
-        {/* BOTÓN CARRITO MÓVIL */} 
-        <Button 
-        className="sm:hidden h-10 w-10 p-1 pb-2 flex items-center justify-center" 
-        onClick={() => setOpenCartMenu(true)} > ≡ </Button>
+           {/* BOTÓN MENU MOBILE */}
+          <Button className="sm:hidden h-8 w-8 p-1 flex items-center justify-center" onClick={() => setOpenCartMenu(true)}>≡
+          </Button>
         </div>
       </Card>
 
