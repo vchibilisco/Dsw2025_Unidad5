@@ -108,15 +108,48 @@ function ListProductsUserPage() {
             <Button>Registrarse</Button>
         </div>
 
-        {/* BOTÓN CARRITO MOBILE */}
-        <Button
-            className="sm:hidden text-3xl"
-            onClick={() => setOpenCartMenu(true)}
-        >
-            ≡
-        </Button>
+        {/* BOTÓN CARRITO MÓVIL */} 
+        <Button 
+        className="sm:hidden text-3xl" 
+        onClick={() => setOpenCartMenu(true)} > ≡ </Button>
         </div>
       </Card>
+
+{/* PANEL CARRITO MOBILE */}
+<div
+  className={`
+    fixed top-0 right-0 h-full w-64 bg-white shadow-lg p-6
+    transition-transform duration-300
+    z-50
+    ${openCartMenu ? "translate-x-0" : "translate-x-full"}
+    sm:hidden
+  `}
+>
+  <h2 className="text-xl mb-4">Carrito</h2>
+
+  <Button
+    className="text-xl mt-4 w-full"
+    onClick={() => {
+      setOpenCartMenu(false);
+      navigate("/cart");
+    }}
+  >
+    Ver carrito ({totalItems})
+  </Button>
+
+  <Button className="text-xl mt-4 w-full" onClick={() => setOpenCartMenu(false)}>
+    Iniciar Sesión
+  </Button>
+
+  <Button className="text-xl mt-4 w-full" onClick={() => setOpenCartMenu(false)}>
+    Registrarse
+  </Button>
+
+  <Button className="text-xl mt-4 w-full" onClick={() => setOpenCartMenu(false)}>
+    Cerrar ✖
+  </Button>
+</div>
+
 
       {/* LISTA DE PRODUCTOS */}
       <div className="mt-4
