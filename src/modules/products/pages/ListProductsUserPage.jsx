@@ -115,40 +115,40 @@ function ListProductsUserPage() {
         </div>
       </Card>
 
-{/* PANEL CARRITO MOBILE */}
-<div
-  className={`
-    fixed top-0 right-0 h-full w-64 bg-white shadow-lg p-6
-    transition-transform duration-300
-    z-50
-    ${openCartMenu ? "translate-x-0" : "translate-x-full"}
-    sm:hidden
-  `}
->
-  <h2 className="text-xl mb-4">Carrito</h2>
+        {/* PANEL CARRITO MOBILE */}
+        <div
+          className={`
+            fixed top-0 right-0 h-full w-64 bg-white shadow-lg p-6
+            transition-transform duration-300
+            z-50
+            ${openCartMenu ? "translate-x-0" : "translate-x-full"}
+            sm:hidden
+          `}
+        >
+          <h2 className="text-xl mb-4">Carrito</h2>
 
-  <Button
-    className="text-xl mt-4 w-full"
-    onClick={() => {
-      setOpenCartMenu(false);
-      navigate("/cart");
-    }}
-  >
-    Ver carrito ({totalItems})
-  </Button>
+          <Button
+            className="text-xl mt-4 w-full"
+            onClick={() => {
+              setOpenCartMenu(false);
+              navigate("/cart");
+            }}
+          >
+            Ver carrito ({totalItems})
+          </Button>
 
-  <Button className="text-xl mt-4 w-full" onClick={() => setOpenCartMenu(false)}>
-    Iniciar Sesión
-  </Button>
+          <Button className="text-xl mt-4 w-full" onClick={() => setOpenCartMenu(false)}>
+            Iniciar Sesión
+          </Button>
 
-  <Button className="text-xl mt-4 w-full" onClick={() => setOpenCartMenu(false)}>
-    Registrarse
-  </Button>
+          <Button className="text-xl mt-4 w-full" onClick={() => setOpenCartMenu(false)}>
+            Registrarse
+          </Button>
 
-  <Button className="text-xl mt-4 w-full" onClick={() => setOpenCartMenu(false)}>
-    Cerrar ✖
-  </Button>
-</div>
+          <Button className="text-xl mt-4 w-full" onClick={() => setOpenCartMenu(false)}>
+            Cerrar ✘
+          </Button>
+        </div>
 
 
       {/* LISTA DE PRODUCTOS */}
@@ -156,7 +156,7 @@ function ListProductsUserPage() {
     flex flex-col gap-4
     sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {loading ? (
-          <span>Buscando datos...</span>
+          <span>Buscando productos...</span>
         ) : (
           products.map((product) => {
             const qty = quantities[product.sku] || 1;

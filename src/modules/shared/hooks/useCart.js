@@ -42,10 +42,26 @@ export function useCart() {
     setCart([]);
   };
 
+  const updateQuantity = (sku, newQuantity) => {
+  if (newQuantity <= 0) {
+    return removeFromCart(sku);
+  }
+
+  const updated = cart.map(item =>
+    item.sku === sku
+      ? { ...item, quantity: newQuantity }
+      : item
+  );
+
+  save(updated);
+};
+
+
   return {
     cart,
     addToCart,
     removeFromCart,
     clearCart,
+    updateQuantity
   };
 }
