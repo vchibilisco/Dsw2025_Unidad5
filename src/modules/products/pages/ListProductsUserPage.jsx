@@ -85,7 +85,7 @@ function ListProductsUserPage() {
 
         {/* BUSCADOR SOLO MOBILE */}
         <div className="flex flex-col gap-4 sm:hidden mt-3">
-        <div className="flex items-center gap-3">
+        <div className="sm:hidden flex items-center gap-2 p-3">
             <input
             value={searchTerm}
             onChange={(evt) => setSearchTerm(evt.target.value)}
@@ -110,7 +110,7 @@ function ListProductsUserPage() {
 
         {/* BOTÓN CARRITO MÓVIL */} 
         <Button 
-        className="sm:hidden text-3xl" 
+        className="sm:hidden h-10 w-10 p-1 pb-2 flex items-center justify-center" 
         onClick={() => setOpenCartMenu(true)} > ≡ </Button>
         </div>
       </Card>
@@ -170,8 +170,8 @@ function ListProductsUserPage() {
                     className="w-full h-40 object-contain mb-3 rounded"
                 />
 
-                <h1>{product.name}</h1>
-                <p className="text-base">
+                <h2 className="text-lg font-semibold">{product.name}</h2>
+                <p className="ext-gray-600 mt-1 text-sm sm:text-base">
                   Stock: {product.stockQuantity} – ${product.currentUnitPrice}
                 </p>
 
@@ -180,7 +180,7 @@ function ListProductsUserPage() {
 
                   {/* ➖ */}
                   <Button
-                    className="px-3"
+                    className="px-2 py-1 text-sm sm:px-3 sm:py-2 sm:text-base"
                     onClick={() =>
                       setQuantities(prev => ({
                         ...prev,
@@ -198,7 +198,7 @@ function ListProductsUserPage() {
 
                   {/* ➕ */}
                   <Button
-                    className="px-3"
+                    className="px-2 py-1 text-sm sm:px-3 sm:py-2 sm:text-base"
                     onClick={() =>
                       setQuantities(prev => ({
                         ...prev,
@@ -210,7 +210,9 @@ function ListProductsUserPage() {
                   </Button>
 
                   {/* AGREGAR */}
-                  <Button onClick={() => addToCart(product, qty)}>
+                  <Button 
+                  className="ml-50 sm:ml-5 text-sm px-4 py-2 sm:text-base"
+                  onClick={() => addToCart(product, qty)}>
                     Agregar
                   </Button>
 
@@ -226,17 +228,17 @@ function ListProductsUserPage() {
         <button
           disabled={pageNumber === 1}
           onClick={() => setPageNumber(pageNumber - 1)}
-          className="bg-gray-200 disabled:bg-gray-100"
+          className="bg-gray-200 disabled:bg-gray-100 text-sm px-4 py-2 sm:text-base"
         >
           Atras
         </button>
 
-        <span>{pageNumber} / {totalPages}</span>
+        <span className="w-8 text-base sm:w-8 sm:text-lg font-semibold">{pageNumber} / {totalPages}</span>
 
         <button
           disabled={pageNumber === totalPages}
           onClick={() => setPageNumber(pageNumber + 1)}
-          className="bg-gray-200 disabled:bg-gray-100"
+          className="bg-gray-200 disabled:bg-gray-100 text-sm px-4 py-2 sm:text-base"
         >
           Siguiente
         </button>
@@ -247,7 +249,7 @@ function ListProductsUserPage() {
             setPageNumber(1);
             setPageSize(Number(evt.target.value));
           }}
-          className="ml-3"
+          className="ml-3 w-20 text-base sm:w-8 sm:text-lg font-semibold"
         >
           <option value="2">2</option>
           <option value="10">10</option>
