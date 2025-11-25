@@ -64,95 +64,64 @@ function ListProductsUserPage() {
 
   return (
     <div>
-      <Card>
-        <div className="flex justify-between items-center mb-3">
-          <div className="flex items-center gap-4">
-            <h1 className="text-3xl">Productos</h1>
+      <Card><div className="flex justify-between items-center mb-3">
 
-            {/* Carrito escritorio */}
-            <Button
-              className="hidden sm:block"
-              onClick={() => navigate("/cart")}
-            >
-              Carrito ({totalItems})
-            </Button>
-          </div>
+        {/* IZQUIERDA — Productos */}
+        <h1 className="text-3xl">Productos</h1>
 
-          {/* BOTÓN CARRITO MÓVIL */}
-          <Button
-            className="sm:hidden text-3xl"
-            onClick={() => setOpenCartMenu(true)}
-          >
-            ≡
-          </Button>
-
-          {/* PANEL CARRITO MOBILE */}
-          <div
-            className={`
-              fixed top-0 right-0 h-full w-64 bg-white shadow-lg p-6
-              transition-transform duration-300
-              ${openCartMenu ? "translate-x-0" : "translate-x-full"}
-              sm:hidden
-            `}
-          >
-            <h2 className="text-xl mb-4">Carrito</h2>
-
-            <Button
-              className="text-xl mt-4"
-              onClick={() => {
-                setOpenCartMenu(false);
-                navigate("/cart");
-              }}
-            >
-              Ver carrito ({totalItems})
-            </Button>
-
-            <Button
-              className="text-xl mt-4"
-              onClick={() => setOpenCartMenu(false)}
-            >
-              Iniciar Sesión
-            </Button>
-
-            <Button
-              className="text-xl mt-4"
-              onClick={() => setOpenCartMenu(false)}
-            >
-              Registrarse
-            </Button>
-
-            <Button
-              className="text-xl mt-4"
-              onClick={() => setOpenCartMenu(false)}
-            >
-              Cerrar ✘
-            </Button>
-          </div>
-
-          {/* Botones sesión escritorio */}
-          <Button className="hidden sm:block">Iniciar Sesión</Button>
-          <Button className="hidden sm:block">Registrarse</Button>
-        </div>
-
-        {/* Filtros */}
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="flex items-center gap-3">
+        {/* CENTRO — Buscador SOLO en escritorio */}
+        <div className="hidden sm:flex items-center gap-3 flex-1 px-6">
             <input
-              value={searchTerm}
-              onChange={(evt) => setSearchTerm(evt.target.value)}
-              type="text"
-              placeholder="Buscar"
-              className="text-[1.3rem] w-full"
+            value={searchTerm}
+            onChange={(evt) => setSearchTerm(evt.target.value)}
+            type="text"
+            placeholder="Buscar productos..."
+            className="border p-2 rounded w-full"
             />
             <Button className="h-11 w-11" onClick={handleSearch}>
-               <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" strokeWidth="0"></g><g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M15.7955 15.8111L21 21M18 10.5C18 14.6421 14.6421 18 10.5 18C6.35786 18 3 14.6421 3 10.5C3 6.35786 6.35786 3 10.5 3C14.6421 3 18 6.35786 18 10.5Z" stroke="#000000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path> </g></svg>
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" strokeWidth="0"></g><g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M15.7955 15.8111L21 21M18 10.5C18 14.6421 14.6421 18 10.5 18C6.35786 18 3 14.6421 3 10.5C3 6.35786 6.35786 3 10.5 3C14.6421 3 18 6.35786 18 10.5Z" stroke="#000000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path> </g></svg>
             </Button>
-          </div>
+        </div>
+
+        {/* BUSCADOR SOLO MOBILE */}
+        <div className="flex flex-col gap-4 sm:hidden mt-3">
+        <div className="flex items-center gap-3">
+            <input
+            value={searchTerm}
+            onChange={(evt) => setSearchTerm(evt.target.value)}
+            type="text"
+            placeholder="Buscar productos..."
+            className="text-[1.3rem] w-full border p-2 rounded"
+            />
+            <Button className="h-11 w-11" onClick={handleSearch}>
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" strokeWidth="0"></g><g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M15.7955 15.8111L21 21M18 10.5C18 14.6421 14.6421 18 10.5 18C6.35786 18 3 14.6421 3 10.5C3 6.35786 6.35786 3 10.5 3C14.6421 3 18 6.35786 18 10.5Z" stroke="#000000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path> </g></svg>
+            </Button>
+        </div>
+        </div>
+
+        {/* DERECHA — Carrito + Sesión escritorio */}
+        <div className="hidden sm:flex items-center gap-3">
+            <Button onClick={() => navigate("/cart")}>
+            Carrito ({totalItems})
+            </Button>
+            <Button>Iniciar Sesión</Button>
+            <Button>Registrarse</Button>
+        </div>
+
+        {/* BOTÓN CARRITO MOBILE */}
+        <Button
+            className="sm:hidden text-3xl"
+            onClick={() => setOpenCartMenu(true)}
+        >
+            ≡
+        </Button>
         </div>
       </Card>
 
       {/* LISTA DE PRODUCTOS */}
-      <div className="mt-4 flex flex-col gap-4">
+      <div className="mt-4
+    flex flex-col gap-4
+    sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {loading ? (
           <span>Buscando datos...</span>
         ) : (
@@ -160,7 +129,7 @@ function ListProductsUserPage() {
             const qty = quantities[product.sku] || 1;
 
             return (
-              <Card key={product.sku}>
+              <Card key={product.sku} className="flex flex-col">
 
                 <img
                     src={defaultProductImage}
