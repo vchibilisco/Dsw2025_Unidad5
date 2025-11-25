@@ -5,6 +5,7 @@ import Card from "../../shared/components/Card";
 import { useCart } from "../../shared/hooks/useCart";
 import LoginModal from "../components/LoginModal";
 import { instance } from "../../shared/api/axiosInstance";
+import SearchBar from "../../shared/components/SearchBar";
 
 function CartPage() {
   const navigate = useNavigate();
@@ -66,29 +67,24 @@ function CartPage() {
           {/* IZQUIERDA */}
           <h1 className="text-3xl">Carrito</h1>
 
-          {/* BUSCADOR ESCRITORIO */}
-          <div className="hidden sm:flex items-center gap-3 flex-1 px-6">
-            <input
-              type="text"
-              placeholder="Buscar productos..."
-              className="border p-2 rounded w-full"
+          {/* BUSCADOR DESKTOP */}
+          <div className="hidden sm:flex flex-1 px-6">
+            <SearchBar
+              value={""}
+              onChange={() => {}}
+              onSearch={() => {}}
             />
-            <Button className="h-11 w-11">
-              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" strokeWidth="0"></g><g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M15.7955 15.8111L21 21M18 10.5C18 14.6421 14.6421 18 10.5 18C6.35786 18 3 14.6421 3 10.5C3 6.35786 6.35786 3 10.5 3C14.6421 3 18 6.35786 18 10.5Z" stroke="#000000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path> </g></svg>
-            </Button>
           </div>
 
-            {/* BUSCADOR MOBILE */}
-            <div className="sm:hidden flex items-center gap-2 p-3">
-            <input
-                type="text"
-                placeholder="Buscar productos..."
-                className="border p-1 rounded text-sm w-full"
+          {/* BUSCADOR MOBILE */}
+          <div className="sm:hidden w-full">
+            <SearchBar
+              value={""}
+              onChange={() => {}}
+              onSearch={() => {}}
             />
-            <Button className="h-8 w-8 p-1 flex items-center justify-center">
-              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" strokeWidth="0"></g><g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M15.7955 15.8111L21 21M18 10.5C18 14.6421 14.6421 18 10.5 18C6.35786 18 3 14.6421 3 10.5C3 6.35786 6.35786 3 10.5 3C14.6421 3 18 6.35786 18 10.5Z" stroke="#000000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path> </g></svg>
-           </Button>
-            </div>
+          </div>
+
 
           {/* BOTONES SESIÓN + VOLVER ESCRITORIO */}
           <div className="hidden sm:flex items-center gap-3">

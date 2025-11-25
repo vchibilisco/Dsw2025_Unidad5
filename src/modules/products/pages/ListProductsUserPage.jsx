@@ -4,6 +4,7 @@ import Button from '../../shared/components/Button';
 import Card from '../../shared/components/Card';
 import { getClientProducts } from '../services/listUser';
 import { useCart } from "../../shared/hooks/useCart";
+import SearchBar from "../../shared/components/SearchBar";
 
 function ListProductsUserPage() {
     const defaultProductImage =
@@ -69,34 +70,22 @@ function ListProductsUserPage() {
         {/* IZQUIERDA — Productos */}
         <h1 className="text-3xl">Productos</h1>
 
-        {/* CENTRO — Buscador SOLO en escritorio */}
-        <div className="hidden sm:flex items-center gap-3 flex-1 px-6">
-            <input
+        {/* BUSCADOR DESKTOP */}
+        <div className="hidden sm:flex flex-1 px-6">
+          <SearchBar
             value={searchTerm}
-            onChange={(evt) => setSearchTerm(evt.target.value)}
-            type="text"
-            placeholder="Buscar productos..."
-            className="border p-2 rounded w-full"
-            />
-            <Button className="h-11 w-11" onClick={handleSearch}>
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" strokeWidth="0"></g><g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M15.7955 15.8111L21 21M18 10.5C18 14.6421 14.6421 18 10.5 18C6.35786 18 3 14.6421 3 10.5C3 6.35786 6.35786 3 10.5 3C14.6421 3 18 6.35786 18 10.5Z" stroke="#000000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path> </g></svg>
-            </Button>
+            onChange={(e) => setSearchTerm(e.target.value)}
+            onSearch={handleSearch}
+          />
         </div>
 
-        {/* BUSCADOR SOLO MOBILE */}
-        <div className="flex flex-col gap-4 sm:hidden mt-3">
-        <div className="sm:hidden flex items-center gap-2 p-3">
-            <input
+        {/* BUSCADOR MOBILE */}
+        <div className="sm:hidden w-full">
+          <SearchBar
             value={searchTerm}
-            onChange={(evt) => setSearchTerm(evt.target.value)}
-            type="text"
-            placeholder="Buscar productos..."
-            className="text-[1.3rem] w-full border p-2 rounded"
-            />
-            <Button className="h-11 w-11" onClick={handleSearch}>
-                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" strokeWidth="0"></g><g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M15.7955 15.8111L21 21M18 10.5C18 14.6421 14.6421 18 10.5 18C6.35786 18 3 14.6421 3 10.5C3 6.35786 6.35786 3 10.5 3C14.6421 3 18 6.35786 18 10.5Z" stroke="#000000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path> </g></svg>
-            </Button>
-        </div>
+            onChange={(e) => setSearchTerm(e.target.value)}
+            onSearch={handleSearch}
+          />
         </div>
 
         {/* DERECHA — Carrito + Sesión escritorio */}
