@@ -43,15 +43,14 @@ function CreateProductForm() {
   };
 
   return (
-    <Card>
+    <Card className='xl:w-[80%] xl:mx-auto'>
       <form
         className='
           flex
           flex-col
-          gap-20
+          gap-1
           p-8
-
-          sm:gap-4
+          sm:gap-3
         '
         onSubmit={handleSubmit(onValid)}
       >
@@ -61,6 +60,7 @@ function CreateProductForm() {
           {...register('sku', {
             required: 'SKU es requerido',
           })}
+          className='h-10'
         />
         <Input
           label='Código Único'
@@ -68,6 +68,7 @@ function CreateProductForm() {
           {...register('cui', {
             required: 'Código Único es requerido',
           })}
+          className='h-10'
         />
         <Input
           label='Nombre'
@@ -75,10 +76,12 @@ function CreateProductForm() {
           {...register('name', {
             required: 'Nombre es requerido',
           })}
+          className='h-10'
         />
         <Input
           label='Descripción'
           {...register('description')}
+          className='h-10'
         />
         <Input
           label='Precio'
@@ -90,6 +93,7 @@ function CreateProductForm() {
               message: 'No puede tener un precio negativo ni ser 0',
             },
           })}
+          className='h-10 text-base'
         />
         <Input
           label='Stock'
@@ -100,9 +104,11 @@ function CreateProductForm() {
               message: 'No puede tener un stock negativo',
             },
           })}
+          className='h-10 text-base'
+          type='number'
         />
         <div className='sm:text-end'>
-          <Button type='submit' className='w-full sm:w-fit'>Crear Producto</Button>
+          <Button type='submit' className='w-full sm:w-fit'><p className='text-base'>Crear Producto</p></Button>
         </div>
         {errorBackendMessage && <span className='text-red-500'>{errorBackendMessage}</span>}
       </form>

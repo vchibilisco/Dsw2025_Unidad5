@@ -94,7 +94,7 @@ function ListProductsPage() {
             ? <span>Buscando datos...</span>
             : products.map(product => (
               <Card key={product.sku}>
-                <h1>{product.sku} - {product.name}</h1>
+                <h1 className=' font-semibold mb-2 text-lg'>{product.sku} - {product.name}</h1>
                 <p className='text-base'>Stock: {product.stockQuantity} - ${product.currentUnitPrice} - {product.isActive ? 'Activado' : 'Desactivado'}</p>
               </Card>
             ))

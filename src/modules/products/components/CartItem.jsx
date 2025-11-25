@@ -10,9 +10,6 @@ const CartItem = ({ product }) => {
     setQuantity(0); 
   };
 
-
-  
-
   if (!product || typeof product !== 'object') {
     console.warn('CartItem recibió un producto inválido:', product);
 
@@ -68,7 +65,7 @@ const CartItem = ({ product }) => {
             </button>
             <button
               onClick={handleAdd}
-              className="bg-purple-600 text-white px-4 py-1 rounded hover:bg-purple-700 text-sm"
+              className="bg-purple-200 hover:bg-purple-300 transition px-4 py-1 rounded  text-sm"
             >
               Agregar
             </button>

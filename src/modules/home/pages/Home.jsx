@@ -29,13 +29,13 @@ function Home() {
       className='flex flex-col gap-3 sm:grid sm:grid-cols-2'
     >
       <Card>
-        <h3>Productos</h3>
-        <p>Cantidad: {productCount !== null ? productCount : 'Cargando...'}</p>
+        <h3 className='font-semibold mb-2 text-xl'>Productos</h3>
+        <p className='text-base'>Cantidad: {productCount !== null ? productCount : 'Cargando...'}</p>
       </Card>
 
       <Card>
-        <h3>Ordenes</h3>
-        <p>Cantidad:  {orderCount !== null ? orderCount : 'Cargando...'}</p>
+        <h3 className='text-xl font-semibold mb-2'>Ordenes</h3>
+        <p className='text-base'>Cantidad:  {orderCount !== null ? orderCount : 'Cargando...'}</p>
       </Card>
     </div>
   );

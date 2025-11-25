@@ -35,6 +35,11 @@ function ListOrdersPage() {
   const [total, setTotal] = useState(0);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
+  const getShortId = (id) => {
+        if (!id || typeof id !== 'string') return '';
+        // Toma los primeros 8 caracteres del UUID para una referencia corta
+        return id.slice(0, 8).toUpperCase();
+    };
 
   const fetchOrders = async () => {
   try {
@@ -92,20 +97,20 @@ function ListOrdersPage() {
   };
 
   return (
-    <div className="p-6">
+    <div className='p-6'>
       <Card>
-        <h1 className="text-3xl mb-4">Órdenes</h1>
+        <h1 className='text-3xl mb-4'>Ordenes</h1>
 
-        <div className="flex flex-col lg:flex-row gap-4 mb-4">
-          <div className="flex items-center gap-3 w-full lg:w-auto">
+        <div className='flex flex-col lg:flex-row gap-4 mb-4'>
+          <div className='flex items-center gap-3 w-full lg:w-auto'>
             <input
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              type="text"
-              placeholder="Buscar por CustomerName"
-              className="text-[1.2rem] border px-3 py-2 w-full lg:w-64"
+              type='text'
+              placeholder='Buscar por Nombre'
+              className='text-[1.2rem] border px-3 py-2 w-full lg:w-64'
             />
-            <Button onClick={handleSearch} className="h-11 w-11">
+            <Button onClick={handleSearch} className='h-11 w-11'>
               <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M15.7955 15.8111L21 21M18 10.5C18 14.6421 14.6421 18 10.5 18C6.35786 18 3 14.6421 3 10.5C3 6.35786 6.35786 3 10.5 3C14.6421 3 18 6.35786 18 10.5Z" stroke="#000000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
@@ -115,7 +120,7 @@ function ListOrdersPage() {
           <select
             value={status}
             onChange={(e) => setStatus(e.target.value)}
-            className="text-[1.2rem] border px-3 py-2"
+            className='text-[1.2rem] border px-3 py-2'
           >
             <option value={orderStatus.ALL}>Todos</option>
             <option value={orderStatus.PENDING}>Pendiente</option>
@@ -128,44 +133,46 @@ function ListOrdersPage() {
         </div>
       </Card>
 
-      <div className="mt-4 flex flex-col gap-4">
+      <div className='mt-4 flex flex-col gap-4'>
         {loading ? (
           <span>Buscando órdenes...</span>
         ) : (
           orders.map((order) => (
 
-            <Card key={order.orderId} className="flex justify-between items-center px-4 py-3">
+            <Card key={order.orderId} className='flex justify-between items-center px-4 py-3'>
               <div>
-                <h2 className="text-xl font-semibold">{order.orderId} - {order.customerName}</h2>
+                <h2 className='text-xl font-semibold'>{getShortId(order.orderId)} - {order.customerName}</h2>
                 <p className="text-base">Estado: {mapOrderStatus(order.orderStatus)}</p>
               </div>
-              <Button onClick={() => setSelectedOrder(order)}>Ver</Button>
+              <Button 
+              className='h-8 w-10'
+              onClick={() => setSelectedOrder(order)}><p className='text-base'>Ver</p></Button>
             </Card>
           ))
         )}
       </div>
 
-      <div className="flex justify-center items-center gap-2 mt-6">
+      <div className='flex justify-center items-center gap-2 mt-6'>
         <button
           disabled={pageNumber === 1}
           onClick={() => setPageNumber(pageNumber - 1)}
-          className="px-4 py-2 text-sm sm:text-base bg-gray-200 disabled:bg-gray-100 rounded-md w-full max-w-[140px]"
+          className='px-4 py-2 text-sm sm:text-base bg-gray-200 disabled:bg-gray-100 rounded-md w-full max-w-[140px]'
         >
           ← Anterior
         </button>
 
-        <div className="hidden sm:flex gap-2">
+        <div className='hidden sm:flex gap-2'>
   {visiblePages.map((page, idx) =>
     typeof page === 'number' ? (
       <button
         key={idx}
         onClick={() => setPageNumber(page)}
-        className={`px-3 py-1 ${pageNumber === page ? 'bg-purple-500 text-white' : 'bg-gray-200'}`}
+        className={`px-3 py-1 ${pageNumber === page ? 'bg-black text-white' : 'bg-gray-200'}`}
       >
         {page}
       </button>
     ) : (
-      <span key={idx} className="px-3 py-1">…</span>
+      <span key={idx} className='px-3 py-1'>…</span>
     )
   )}
 </div>
@@ -174,35 +181,36 @@ function ListOrdersPage() {
         <button
           disabled={pageNumber === totalPages}
           onClick={() => setPageNumber(pageNumber + 1)}
-          className="px-4 py-2 text-sm sm:text-base bg-gray-200 disabled:bg-gray-100 rounded-md w-full max-w-[140px]"
+          className='px-4 py-2 text-sm sm:text-base bg-gray-200 disabled:bg-gray-100 rounded-md w-full max-w-[140px]'
         >
           Siguiente →
         </button>
       </div>
       {selectedOrder && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-            <h2 className="text-xl font-bold mb-2">Orden {selectedOrder.orderId}</h2>
-            <p><strong>Cliente:</strong> {selectedOrder.customerName}</p>
-            <p><strong>Fecha:</strong> {new Date(selectedOrder.date).toLocaleString()}</p>
-            <p><strong>Dirección:</strong> {selectedOrder.billingAddress}</p>
-            <p><strong>Notas:</strong> {selectedOrder.notes || 'Sin notas'}</p>
-            <p><strong>Estado:</strong> {mapOrderStatus(selectedOrder.orderStatus)}</p>
+        <div className='fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-50'>
+          <div className='bg-white p-6 rounded-lg shadow-lg w-full max-w-sm sm:max-w-md mx-4'>
+            <h2 className='text-xl font-bold mb-2'>Detalle de Orden:</h2>
+            <p className='text-sm sm:text-base'><strong>Orden ID:</strong> {selectedOrder.orderId}</p>
+            <p className='text-sm sm:text-base'><strong>Cliente:</strong> {selectedOrder.customerName}</p>
+            <p className='text-sm sm:text-base'><strong>Fecha:</strong> {new Date(selectedOrder.date).toLocaleString()}</p>
+            <p className='text-sm sm:text-base'><strong>Dirección:</strong> {selectedOrder.billingAddress}</p>
+            <p className='text-sm sm:text-base'><strong>Notas:</strong> {selectedOrder.notes || 'Sin notas'}</p>
+            <p className='text-sm sm:text-base'><strong>Estado:</strong> {mapOrderStatus(selectedOrder.orderStatus)}</p>
 
-            <div className="mt-4">
-              <h3 className="font-semibold mb-2">Items:</h3>
+            <div className='mt-4'>
+              <h3 className='font-semibold mb-2 text-base sm:text-lg'>Items:</h3>
               {selectedOrder.orderItems.map((item, index) => (
-                <div key={index} className="mb-2 border-b pb-2">
-                  <p><strong>Producto:</strong> {item.name }</p>
-                  <p><strong>Producto ID:</strong> {item.productId}</p>
-                  <p><strong>Cantidad:</strong> {item.quantity}</p>
-                  <p><strong>Precio unitario:</strong> ${item.unitPrice}</p>
+                <div key={index} className='mb-2 border-b pb-2'>
+                  <p className='text-sm sm:text-base'><strong>Producto:</strong> {item.name }</p>
+                  <p className='text-sm sm:text-base'><strong>Producto ID:</strong> {item.productId}</p>
+                  <p className='text-sm sm:text-base'><strong>Cantidad:</strong> {item.quantity}</p>
+                  <p className='text-sm sm:text-base'><strong>Precio unitario:</strong> ${item.unitPrice}</p>
                 </div>
               ))}
             </div>
 
-            <div className="mt-4 text-right">
-              <Button onClick={() => setSelectedOrder(null)}>Cerrar</Button>
+            <div className='mt-4 text-right'>
+              <Button onClick={() => setSelectedOrder(null)}><p className='text-sm sm:text-base'>Cerrar</p></Button>
             </div>
           </div>
         </div>

@@ -17,7 +17,7 @@ function Dashboard() {
 
   const getLinkStyles = ({ isActive }) => (
     `
-      pl-4 w-full block  pt-4 pb-4 rounded-4xl transition hover:bg-gray-100
+      pl-4 w-full block  pt-4 pb-4 rounded-4xl transition hover:bg-gray-100 text-base
       ${isActive
       ? 'bg-purple-200 hover:bg-purple-100 '
       : ''
@@ -26,7 +26,7 @@ function Dashboard() {
   );
 
   const renderLogoutButton = (mobile = false) => (
-    <Button className={`${mobile ? 'block w-full sm:hidden' :  'hidden sm:block' }`} onClick={logout}>Cerrar sesión</Button>
+    <Button className={`${mobile ? 'block w-full sm:hidden' :  'hidden sm:block' } text-base`} onClick={logout}>Cerrar sesión</Button>
   );
 
   return (

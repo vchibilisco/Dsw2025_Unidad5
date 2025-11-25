@@ -6,23 +6,34 @@ import { createOrder } from '../../orders/services/orderCreateService';
 import useAuth from '../../auth/hook/useAuth';
 import { useOutletContext } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-import LoginForm from '../../auth/components/LoginForm';
-import RegisterForm from '../../auth/components/RegisterForm';
+import UserLoginForm from '../../auth/components/UserLoginForm';
+
 
 function ShoppingCart() {
   const [cartItems, setCartItems] = useState([]);
+
   const { isAuthenticated, customerId } = useAuth();
 
+  const [pendingCheckout, setPendingCheckout] = useState(false);
+
   const [showLoginModal, setShowLoginModal] = useState(false);
-  const [showRegisterModal, setShowRegisterModal] = useState(false);
+
   const navigate = useNavigate();
 
   const { cartVersion } = useOutletContext();
 
-useEffect(() => {
-  const items = JSON.parse(localStorage.getItem('cart') || '[]');
-  setCartItems(items);
-}, [cartVersion]);
+  useEffect(() => {
+    const items = JSON.parse(localStorage.getItem('cart') || '[]');
+
+    setCartItems(items);
+  }, [cartVersion]);
+
+  useEffect(() => {
+    if (isAuthenticated && pendingCheckout) {
+      handleCheckout(); 
+      setPendingCheckout(false);
+    }
+  }, [isAuthenticated, pendingCheckout]);
 
   const handleQuantityChange = (sku, delta) => {
     const updatedItems = cartItems
@@ -51,6 +62,7 @@ useEffect(() => {
 
   const handleCheckout = async () => {
     if (!isAuthenticated) {
+      setPendingCheckout(true);
       setShowLoginModal(true);
       return;
     }
@@ -123,15 +135,15 @@ useEffect(() => {
         )}
       </div>
 
-      <div className="sm:w-1/3 ">
-        <Card className="w-full max-w-sm mx-auto shadow-sm text-sm sm:text-base">
-          <div className="flex flex-col gap-2 sm:min-h-screen">
-            <div className="text-lg font-semibold text-gray-800">Detalle de pedido</div>
+      <div className="sm:w-1/3 w-full sticky top-4">
+        <Card className="w-full shadow-md bg-white p-6 rounded-lg text-sm md:text-base">
+          <div className="flex flex-col gap-2 sm:gap-6  sm:h-[calc(80vh-2rem)] overflow-y-auto">
+            <div className="text-xl font-bold text-gray-900 border-b pb-4">Detalle de pedido</div>
             <div className="text-gray-600">Cantidad en total: {totalQuantity}</div>
             <div className="text-gray-600">Total a pagar: ${totalAmount.toFixed(2)}</div>
             <button
               onClick={handleCheckout}
-              className="mt-3 bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700"
+              className="sm:mt-auto bg-purple-200 hover:bg-purple-300 transition px-4 py-2 rounded "
             >
               Finalizar Compra
             </button>
@@ -139,50 +151,27 @@ useEffect(() => {
         </Card>
       </div>
       {showLoginModal && (
-  <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/30">
-    <div className="w-full max-w-md relative">
+
+  <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/30 px-4">
+
+    <div className="relative w-full max-w-md bg-white rounded-lg shadow-lg p-6 sm:p-8">
+
       <button
-        className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+        className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 transition-colors"
         onClick={() => setShowLoginModal(false)}
       >
-        &#10005;
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+        </svg>
       </button>
-      <LoginForm
-        onSuccess={(action) => {
-          if (action === 'register') {
-            setShowLoginModal(false);
-            setShowRegisterModal(true); 
-          } else {
-            setShowLoginModal(false);   
-          }
-        }}
+
+      <UserLoginForm
+        onSuccess={() => {setShowLoginModal(false);}}
       />
     </div>
   </div>
 )}
-{/* Modal Register */}
-      {showRegisterModal && (
-  <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/30">
-    <div className="w-full max-w-md relative">
-      <button
-        className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
-        onClick={() => setShowRegisterModal(false)}
-      >
-        &#10005;
-      </button>
-      <RegisterForm
-        onSuccess={(action) => {
-          if (action === 'login') {
-            setShowRegisterModal(false);
-            setShowLoginModal(true); 
-          } else {
-            setShowRegisterModal(false);
-          }
-        }}
-      />
-    </div>
-  </div>
-)}
+
 
     </div>
   );

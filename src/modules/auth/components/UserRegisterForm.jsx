@@ -34,7 +34,7 @@ function UserRegisterForm({ onSuccess }) {
       password: formData.password,
       name: formData.name,
       phoneNumber: formData.phoneNumber,
-      role: formData.role,
+      role: 'Customer',
     };
 
     try {
