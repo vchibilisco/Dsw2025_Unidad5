@@ -1,9 +1,9 @@
 import { instance } from '../../shared/api/axiosInstance';
 
-export const getClientProducts = async (search = null, status = null, pageNumber = 1, pageSize = 20 ) => {
+export const getClientProducts = async (search = "", status = "enabled", pageNumber = 1, pageSize = 20) => {
   const queryString = new URLSearchParams({
     search,
-    status,
+    status, // SIEMPRE productos habilitados
     pageNumber,
     pageSize,
   });

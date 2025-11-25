@@ -5,36 +5,41 @@ import Card from '../../shared/components/Card';
 import { getClientProducts } from '../services/listUser';
 import { useCart } from "../../shared/hooks/useCart";
 
-const productStatus = {
-  ALL: 'all',
-  ENABLED: 'enabled',
-  DISABLED: 'disabled',
-};
-
 function ListProductsUserPage() {
+    const defaultProductImage =
+  "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAMAAAAJbSJIAAAAMFBMVEXp7vG6vsG3u77s8fTCxsnn7O/f5OfFyczP09bM0dO8wMPk6ezY3eDd4uXR1tnJzdBvAX/cAAACVElEQVR4nO3b23KDIBRA0ShGU0n0//+2KmO94gWZ8Zxmr7fmwWEHJsJUHw8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwO1MHHdn+L3rIoK6eshsNJ8kTaJI07fERPOO1Nc1vgQm2oiBTWJ+d8+CqV1heplLzMRNonED+4mg7L6p591FC+133/xCRNCtd3nL9BlxWP++MOaXFdEXFjZ7r8D9l45C8y6aG0cWtP/SUGhs2d8dA/ZfGgrzYX+TVqcTNRRO9l+fS5eSYzQs85psUcuzk6igcLoHPz2J8gvzWaH/JLS+95RfOD8o1p5CU5R7l5LkfKEp0mQ1UX7hsVXqDpRrifILD/3S9CfmlUQFhQfuFu0STTyJ8gsP3PH7GVxN1FC4t2sbBy4TNRTu7LyHJbqaqKFw+/Q0ncFloo7CjRPwMnCWqKXQZ75El4nKC9dmcJaou9AXOE5UXbi+RGeJygrz8Uf+GewSn9uXuplnWDZJ7d8f24F/s6iq0LYf9olbS3Q8i5oKrRu4S9ybwaQ/aCkqtP3I28QDgeoK7TBya/aXqL5COx67PTCD2grtdOwH+pQV2r0a7YVBgZoKwwIVFQYG6ikMDVRTGByopjD8ATcKb0UhhRTe77sKs2DV7FKSjId18TUEBYVyLhUThWfILHTDqmI85/2RWWjcE/bhP6OD7maT3h20MHsA47JC3PsW0wcwLhv9t0OOPOIkCn21y2bXXwlyylxiYMPk1SuCSmpfK8bNQvIrpAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwNX4BCbAju9/X67UAAAAASUVORK5CYII=";
+
   const navigate = useNavigate();
 
-  const [ searchTerm, setSearchTerm ] = useState('');
-  const [ status, setStatus ] = useState(productStatus.ALL);
-  const [ pageNumber, setPageNumber ] = useState(1);
-  const [ pageSize, setPageSize ] = useState(10);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [status, setStatus] = useState('enabled');
+  const [pageNumber, setPageNumber] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
-  const [ total, setTotal ] = useState(0);
-  const [ products, setProducts ] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [products, setProducts] = useState([]);
 
   const [loading, setLoading] = useState(false);
 
-  const { addToCart } = useCart();
+  // useCart (solo una vez)
+  const { cart, addToCart } = useCart();
+
+  // cantidad por SKU
   const [quantities, setQuantities] = useState({});
 
+  // menú carrito móvil
   const [openCartMenu, setOpenCartMenu] = useState(false);
-  const { cart } = useCart();
   const totalItems = cart.reduce((acc, p) => acc + p.quantity, 0);
 
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      const { data, error } = await getClientProducts(searchTerm, status, pageNumber, pageSize);
+      const { data, error } = await getClientProducts(
+        searchTerm,
+        status,
+        pageNumber,
+        pageSize
+      );
 
       if (error) throw error;
 
@@ -60,169 +65,187 @@ function ListProductsUserPage() {
   return (
     <div>
       <Card>
-        <div
-          className='flex justify-between items-center mb-3'
-        >
+        <div className="flex justify-between items-center mb-3">
           <div className="flex items-center gap-4">
-            <h1 className='text-3xl'>Productos</h1>
+            <h1 className="text-3xl">Productos</h1>
 
-            {/* botón solo escritorio */}
+            {/* Carrito escritorio */}
             <Button
-                className="hidden sm:block"
-                onClick={() => navigate("/cart")}
+              className="hidden sm:block"
+              onClick={() => navigate("/cart")}
             >
-                Carrito de Compras ({totalItems})
+              Carrito ({totalItems})
             </Button>
-            </div>
+          </div>
 
-         {/* BOTÓN CARRITO MÓVIL */}
-            <button
-                className="sm:hidden text-3xl"
-                onClick={() => setOpenCartMenu(true)}
-            >
-                🛒
-            </button>
+          {/* BOTÓN CARRITO MÓVIL */}
+          <Button
+            className="sm:hidden text-3xl"
+            onClick={() => setOpenCartMenu(true)}
+          >
+            ≡
+          </Button>
 
-                    {/* PANEL CARRITO MOBILE */}
-            <div
+          {/* PANEL CARRITO MOBILE */}
+          <div
             className={`
-                fixed top-0 right-0 h-full w-64 bg-white shadow-lg p-6
-                transition-transform duration-300
-                ${openCartMenu ? "translate-x-0" : "translate-x-full"}
-                sm:hidden
+              fixed top-0 right-0 h-full w-64 bg-white shadow-lg p-6
+              transition-transform duration-300
+              ${openCartMenu ? "translate-x-0" : "translate-x-full"}
+              sm:hidden
             `}
-            >
+          >
             <h2 className="text-xl mb-4">Carrito</h2>
 
             <Button
-                className="mb-4 w-full"
-                onClick={() => {
+              className="text-xl mt-4"
+              onClick={() => {
                 setOpenCartMenu(false);
                 navigate("/cart");
-                }}
+              }}
             >
-                Ver carrito ({totalItems})
-            </Button>
-
-             <Button
-                className="text-xl mt-4"
-                onClick={() => setOpenCartMenu(false)}
-            >
-                Iniciar Sesión
-            </Button>
-
-             <Button
-                className="text-xl mt-4"
-                onClick={() => setOpenCartMenu(false)}
-            >
-                Registrarse
+              Ver carrito ({totalItems})
             </Button>
 
             <Button
-                className="text-xl mt-4"
-                onClick={() => setOpenCartMenu(false)}
+              className="text-xl mt-4"
+              onClick={() => setOpenCartMenu(false)}
             >
-                Cerrar ✖
+              Iniciar Sesión
             </Button>
-            </div>
 
-          <Button
-            className='h-11 w-11 rounded-2xl sm:hidden'
-          >
-            <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" strokeWidth="0"></g><g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M5 11C4.44772 11 4 10.5523 4 10C4 9.44772 4.44772 9 5 9H15C15.5523 9 16 9.44772 16 10C16 10.5523 15.5523 11 15 11H5Z" fill="#000000"></path> <path d="M9 5C9 4.44772 9.44772 4 10 4C10.5523 4 11 4.44772 11 5V15C11 15.5523 10.5523 16 10 16C9.44772 16 9 15.5523 9 15V5Z" fill="#000000"></path> </g></svg>
-          </Button>
+            <Button
+              className="text-xl mt-4"
+              onClick={() => setOpenCartMenu(false)}
+            >
+              Registrarse
+            </Button>
 
-          <Button
-            className='hidden sm:block'
-           // onClick={() => navigate('/admin/products/create')}
-          >
-            Iniciar Sesión
-          </Button>
-
-          <Button
-            className='hidden sm:block'
-           // onClick={() => navigate('/admin/products/create')}
-          >
-            Registrarse
-          </Button>
-        </div>
-
-        <div className='flex flex-col sm:flex-row gap-4'>
-          <div
-            className='flex items-center gap-3'
-          >
-            <input value={searchTerm} onChange={(evt) => setSearchTerm(evt.target.value)} type="text" placeholder='Buscar' className='text-[1.3rem] w-full' />
-            <Button className='h-11 w-11' onClick={handleSearch}>
-              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" strokeWidth="0"></g><g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M15.7955 15.8111L21 21M18 10.5C18 14.6421 14.6421 18 10.5 18C6.35786 18 3 14.6421 3 10.5C3 6.35786 6.35786 3 10.5 3C14.6421 3 18 6.35786 18 10.5Z" stroke="#000000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path> </g></svg>
+            <Button
+              className="text-xl mt-4"
+              onClick={() => setOpenCartMenu(false)}
+            >
+              Cerrar ✘
             </Button>
           </div>
-          <select onChange={evt => setStatus(evt.target.value)} className='text-[1.3rem]'>
-            <option value={productStatus.ALL}>Todos</option>
-            <option value={productStatus.ENABLED}>Habilitados</option>
-            <option value={productStatus.DISABLED}>Inhabilitados</option>
-          </select>
+
+          {/* Botones sesión escritorio */}
+          <Button className="hidden sm:block">Iniciar Sesión</Button>
+          <Button className="hidden sm:block">Registrarse</Button>
+        </div>
+
+        {/* Filtros */}
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex items-center gap-3">
+            <input
+              value={searchTerm}
+              onChange={(evt) => setSearchTerm(evt.target.value)}
+              type="text"
+              placeholder="Buscar"
+              className="text-[1.3rem] w-full"
+            />
+            <Button className="h-11 w-11" onClick={handleSearch}>
+               <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" strokeWidth="0"></g><g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M15.7955 15.8111L21 21M18 10.5C18 14.6421 14.6421 18 10.5 18C6.35786 18 3 14.6421 3 10.5C3 6.35786 6.35786 3 10.5 3C14.6421 3 18 6.35786 18 10.5Z" stroke="#000000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path> </g></svg>
+            </Button>
+          </div>
         </div>
       </Card>
 
-      <div className='mt-4 flex flex-col gap-4'>
-        {
-          loading
-            ? <span>Buscando datos...</span>
-            : products.map(product => (
-  <Card key={product.sku}>
-    <h1>{product.sku} - {product.name}</h1>
-    <p className='text-base'>
-      Stock: {product.stockQuantity} – ${product.currentUnitPrice}
-    </p>
+      {/* LISTA DE PRODUCTOS */}
+      <div className="mt-4 flex flex-col gap-4">
+        {loading ? (
+          <span>Buscando datos...</span>
+        ) : (
+          products.map((product) => {
+            const qty = quantities[product.sku] || 1;
 
-    <div className="flex gap-3 mt-3">
-      <input
-        type="number"
-        min="1"
-        value={quantities[product.sku] || 1}
-        onChange={(e) => setQuantities({
-          ...quantities,
-          [product.sku]: Number(e.target.value)
-        })}
-        className="w-20 border p-1"
-      />
+            return (
+              <Card key={product.sku}>
 
-      <Button
-        onClick={() => addToCart(product, quantities[product.sku] || 1)}
-      >
-        Agregar
-      </Button>
-    </div>
-  </Card>
-))
+                <img
+                    src={defaultProductImage}
+                    alt={product.name}
+                    className="w-full h-40 object-contain mb-3 rounded"
+                />
 
-        }
+                <h1>{product.name}</h1>
+                <p className="text-base">
+                  Stock: {product.stockQuantity} – ${product.currentUnitPrice}
+                </p>
+
+                {/* Controles cantidad */}
+                <div className="flex items-center gap-4 mt-3">
+
+                  {/* ➖ */}
+                  <Button
+                    className="px-3"
+                    onClick={() =>
+                      setQuantities(prev => ({
+                        ...prev,
+                        [product.sku]: Math.max(1, qty - 1)
+                      }))
+                    }
+                  >
+                    ➖
+                  </Button>
+
+                  {/* Cantidad */}
+                  <span className="w-8 text-center text-lg font-semibold">
+                    {qty}
+                  </span>
+
+                  {/* ➕ */}
+                  <Button
+                    className="px-3"
+                    onClick={() =>
+                      setQuantities(prev => ({
+                        ...prev,
+                        [product.sku]: Math.min(product.stockQuantity, qty + 1)
+                      }))
+                    }
+                  >
+                    ➕
+                  </Button>
+
+                  {/* AGREGAR */}
+                  <Button onClick={() => addToCart(product, qty)}>
+                    Agregar
+                  </Button>
+
+                </div>
+              </Card>
+            );
+          })
+        )}
       </div>
 
-      <div className='flex justify-center items-center mt-3'>
+      {/* Paginación */}
+      <div className="flex justify-center items-center mt-3">
         <button
           disabled={pageNumber === 1}
           onClick={() => setPageNumber(pageNumber - 1)}
-          className='bg-gray-200 disabled:bg-gray-100'
+          className="bg-gray-200 disabled:bg-gray-100"
         >
           Atras
         </button>
+
         <span>{pageNumber} / {totalPages}</span>
+
         <button
-          disabled={ pageNumber === totalPages }
+          disabled={pageNumber === totalPages}
           onClick={() => setPageNumber(pageNumber + 1)}
-          className='bg-gray-200 disabled:bg-gray-100'
+          className="bg-gray-200 disabled:bg-gray-100"
         >
           Siguiente
         </button>
 
         <select
           value={pageSize}
-          onChange={evt => {
+          onChange={(evt) => {
             setPageNumber(1);
             setPageSize(Number(evt.target.value));
           }}
-          className='ml-3'
+          className="ml-3"
         >
           <option value="2">2</option>
           <option value="10">10</option>
@@ -231,8 +254,7 @@ function ListProductsUserPage() {
         </select>
       </div>
     </div>
-
   );
-};
+}
 
 export default ListProductsUserPage;
