@@ -1,52 +1,28 @@
-import { useState } from "react";
-import { instance } from "../../shared/api/axiosInstance";
-import Button from "../../shared/components/Button";
+// src/auth/modals/LoginModal.jsx
+import Modal from "./Modal";
+import LoginForm from '../../auth/components/LoginForm';
 
-function LoginModal({ onSuccess }) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
-  const login = async () => {
-    try {
-      const { data } = await instance.post("/api/auth/login", {
-        email,
-        password
-      });
-
-      localStorage.setItem("token", data.token);
-      onSuccess();
-    } catch (err) {
-      alert("Credenciales inválidas");
-    }
-  };
-
+export default function LoginModal({ isOpen, onClose }) {
   return (
-    <div className="fixed inset-0 bg-black/60 flex justify-center items-center">
-      <div className="bg-white p-6 rounded-lg w-[350px]">
-        <h2 className="text-xl mb-4">Iniciar sesión</h2>
+    <Modal isOpen={isOpen} onClose={onClose}>
+      <h2 className="text-2xl font-bold mb-4 text-center">Iniciar sesión</h2>
 
-        <input
-          type="email"
-          className="border p-2 w-full mb-3"
-          placeholder="Correo"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
+      <LoginForm
+        onSuccess={onClose}  // ← al logear cierra modal
+      />
 
-        <input
-          type="password"
-          className="border p-2 w-full mb-4"
-          placeholder="Contraseña"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-
-        <Button className="w-full" onClick={login}>
-          Ingresar
-        </Button>
-      </div>
-    </div>
+      <p className="text-center text-sm mt-4">
+        ¿No tienes cuenta?
+        <button
+          className="text-blue-600 ml-1"
+          onClick={() => {
+            onClose();            // cerramos login
+            window.dispatchEvent(new Event("open-register")); // abrimos register
+          }}
+        >
+          Regístrate
+        </button>
+      </p>
+    </Modal>
   );
 }
-
-export default LoginModal;

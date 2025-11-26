@@ -5,106 +5,116 @@ import Input from '../../shared/components/Input';
 import Button from '../../shared/components/Button';
 import useAuth from '../hook/useAuth';
 
-function RegisterForm() {
+function RegisterForm({ onSuccess, fixedRole }) {
   const [errorMessage, setErrorMessage] = useState('');
+
   const {
     register,
     handleSubmit,
     formState: { errors },
-    getValues,
-  } = useForm({
-    defaultValues: {
-      username: '',
-      email: '',
-      password: '',
-      confirmPassword: '',
-      role: '',
-    },
-  });
+    getValues
+  } = useForm();
 
   const navigate = useNavigate();
   const { register: registerUser } = useAuth();
 
   const onValid = async ({ username, password, email, role }) => {
-    setErrorMessage('');
+    setErrorMessage("");
+    const finalRole = fixedRole ?? role;
 
     try {
-      const { error } = await registerUser(username, password, email, role);
+      const { error } = await registerUser(username, password, email, finalRole);
 
       if (error) {
-        setErrorMessage(error.frontendErrorMessage ?? 'No se pudo completar el registro');
-
+        setErrorMessage(error.frontendErrorMessage ?? "No se pudo completar el registro");
         return;
       }
 
-      navigate('/login');
-    } catch (err) {
-      console.error(err);
-      setErrorMessage('Llame a soporte');
+      if (onSuccess) return onSuccess();
+
+      navigate("/login");
+
+    } catch {
+      setErrorMessage("Llame a soporte");
     }
   };
 
   return (
     <form
-      className='flex flex-col gap-20 bg-white p-8 sm:w-md sm:gap-4 sm:rounded-lg sm:shadow-lg'
+      className="
+        flex flex-col gap-8
+        bg-white
+        p-8
+        rounded-xl
+        shadow-lg
+        w-full
+        max-w-md
+        mx-auto
+      "
       onSubmit={handleSubmit(onValid)}
     >
+      
       <Input
-        label='Usuario'
-        { ...register('username', {
-          required: 'Usuario es obligatorio',
-        }) }
+        label="Usuario"
+        {...register("username", { required: "Usuario es obligatorio" })}
         error={errors.username?.message}
       />
+
       <Input
-        label='Email'
-        { ...register('email', {
-          required: 'Email es obligatorio',
-          pattern: {
-            value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-            message: 'Formato de email invalido',
-          },
-        }) }
+        label="Email"
+        {...register("email", { required: "Email es obligatorio" })}
         error={errors.email?.message}
       />
+
       <Input
-        label='Contrasena'
-        type='password'
-        { ...register('password', {
-          required: 'Contrasena es obligatoria',
-          minLength: {
-            value: 6,
-            message: 'La contrasena debe tener al menos 6 caracteres',
-          },
-        }) }
+        label="Contraseña"
+        type="password"
+        {...register("password", { required: "Contraseña obligatoria" })}
         error={errors.password?.message}
       />
+
       <Input
-        label='Confirmar contrasena'
-        type='password'
-        { ...register('confirmPassword', {
-          required: 'Confirmar contrasena es obligatorio',
-          validate: (value) =>
-            value === getValues('password') || 'Las contrasenas no coinciden',
-        }) }
+        label="Confirmar Contraseña"
+        type="password"
+        {...register("confirmPassword", {
+          required: "Confirmación obligatoria",
+          validate: (v) => v === getValues("password") || "Las contraseñas no coinciden"
+        })}
         error={errors.confirmPassword?.message}
       />
-      <div className='flex flex-col gap-2'>
-        <label>Rol</label>
-        <select
-          className='text-[1.3rem]'
-          { ...register('role', {
-            required: 'Rol de usuario es obligatorio',
-          }) }
-        >
-          <option value='Client'>Cliente</option>
-          <option value='Admin'>Admin</option>
-        </select>
-        {errors.role?.message && <p className='text-red-500'>{errors.role.message}</p>}
-      </div>
-      {errorMessage && <p className='text-red-500'>{errorMessage}</p>}
-      <Button type='submit'>Registrarse</Button>
-      <Button type='button' onClick={() => navigate('/login')}>Iniciar Sesión</Button>
+
+      {!fixedRole && (
+        <div className="flex flex-col gap-1">
+          <label className="text-md font-medium text-gray-600">Rol</label>
+
+          <select
+            className="border rounded-lg p-2 text-gray-700"
+            {...register("role", { required: "El rol es obligatorio" })}
+          >
+            <option value="Client">Cliente</option>
+            <option value="Admin">Admin</option>
+          </select>
+
+          {errors.role?.message && (
+            <p className="text-red-500 text-sm">{errors.role.message}</p>
+          )}
+        </div>
+      )}
+
+      {errorMessage && (
+        <p className="text-red-500 text-center text-sm">{errorMessage}</p>
+      )}
+
+      {/* Botón principal */}
+      <Button type="submit">Registrarse</Button>
+
+      {/*botón para volver al login */}
+      {!onSuccess && (
+        <Button type="button" onClick={() => navigate("/login")}>
+          Iniciar Sesión
+        </Button>
+      )}
+
     </form>
   );
 }
