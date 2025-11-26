@@ -5,10 +5,10 @@ import Card from "../../shared/components/Card";
 import { useCart } from "../../shared/hooks/useCart";
 import LoginModal from "../components/LoginModal";
 import RegisterModal from "../components/RegisterModal";
-import { instance } from "../../shared/api/axiosInstance";
-
 import UserHeaderMenu from "../../shared/components/UserHeaderMenu";
 import MobileSideMenu from "../../shared/components/MobileSideMenu";
+import { createOrder } from "../../orders/services/createOrder";
+import useAuth from "../../auth/hook/useAuth";
 
 function CartPage() {
   const navigate = useNavigate();
@@ -21,7 +21,7 @@ function CartPage() {
 
   const [deleteQuantities, setDeleteQuantities] = useState({});
 
-  const isLogged = () => !!localStorage.getItem("token");
+  const { isAuthenticated } = useAuth();
 
   const totalItems = cart.reduce((acc, p) => acc + p.quantity, 0);
   const totalAmount = cart.reduce(
@@ -43,22 +43,38 @@ function CartPage() {
   }, []);
 
   const sendOrder = async () => {
-    try {
-      await instance.post("/api/orders", {
-        items: cart.map((i) => ({ sku: i.sku, quantity: i.quantity })),
-      });
+  try {
+    // TODO: reemplazar cuando tengas el verdadero customerId (GUID)
+    const HARDCODED_CUSTOMER_ID = "8ee65b9a-6746-4401-a885-09a9f7c67ed4";
 
-      clearCart();
-      navigate("/");
-    } catch (err) {
-      alert("Error al procesar la orden.");
-    }
-  };
+    const orderData = {
+      customerId: HARDCODED_CUSTOMER_ID,
+      shippingAddress: "Sin especificar",
+      billingAddress: "Sin especificar",
+      notes: "",
+      orderItems: cart.map((item) => ({
+        productId:  item.productId ?? "e2f1d0c9-b8a7-6c5d-4e3f-2a1b0c9d8e7f",  
+        quantity: item.quantity,
+      })),
+    };
+
+    const { data, error } = await createOrder(orderData);
+
+    if (error) throw error;
+
+    clearCart();
+    navigate("/");
+
+  } catch (err) {
+    console.error(err);
+    alert("Error al procesar la orden.");
+  }
+};
 
   const handleCheckout = () => {
-    if (isLogged()) sendOrder();
-    else setOpenLoginModal(true);
-  };
+  if (isAuthenticated) sendOrder();
+  else setOpenLoginModal(true);
+};
 
   const handleLoginSuccess = () => {
     setOpenLoginModal(false);
