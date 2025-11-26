@@ -1,13 +1,13 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import Button from '../../shared/components/Button';
-import Card from '../../shared/components/Card';
-import { getClientProducts } from '../services/listUser';
-import { useCart } from "../../shared/hooks/useCart";
-import SearchBar from "../../shared/components/SearchBar";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import Button from "../../shared/components/Button";
+import Card from "../../shared/components/Card";
+import MobileSideMenu from "../../shared/components/MobileSideMenu";
+import UserHeaderMenu from "../../shared/components/UserHeaderMenu";
 import LoginModal from "../../cart/components/LoginModal";
 import RegisterModal from "../../cart/components/RegisterModal";
-
+import { getClientProducts } from "../services/listUser";
+import { useCart } from "../../shared/hooks/useCart";
 
 function ListProductsUserPage() {
   const defaultProductImage =
@@ -15,28 +15,29 @@ function ListProductsUserPage() {
 
   const navigate = useNavigate();
 
-  const [searchTerm, setSearchTerm] = useState('');
-  const [status, setStatus] = useState('enabled');
+  // PRODUCT STATE
+  const [searchTerm, setSearchTerm] = useState("");
+  const [status] = useState("enabled");
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
   const [total, setTotal] = useState(0);
   const [products, setProducts] = useState([]);
-
   const [loading, setLoading] = useState(false);
 
-  // carrito
+  // CART
   const { cart, addToCart } = useCart();
   const [quantities, setQuantities] = useState({});
-
-  // menú móvil
-  const [openCartMenu, setOpenCartMenu] = useState(false);
   const totalItems = cart.reduce((acc, p) => acc + p.quantity, 0);
 
-  // modales login / register
+  // MOBILE MENU
+  const [openCartMenu, setOpenCartMenu] = useState(false);
+
+  // MODALS
   const [openLoginModal, setOpenLoginModal] = useState(false);
   const [openRegisterModal, setOpenRegisterModal] = useState(false);
 
+  // OPEN MODALS FROM EVENTS
   useEffect(() => {
     const openLogin = () => setOpenLoginModal(true);
     const openRegister = () => setOpenRegisterModal(true);
@@ -50,8 +51,7 @@ function ListProductsUserPage() {
     };
   }, []);
 
-
-  // traer productos
+  // FETCH PRODUCTS
   const fetchProducts = async () => {
     try {
       setLoading(true);
@@ -61,13 +61,10 @@ function ListProductsUserPage() {
         pageNumber,
         pageSize
       );
-
       if (error) throw error;
 
       setTotal(data.total);
       setProducts(data.productItems);
-    } catch (error) {
-      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -75,120 +72,56 @@ function ListProductsUserPage() {
 
   useEffect(() => {
     fetchProducts();
-  }, [status, pageSize, pageNumber]);
+  }, [pageNumber, pageSize]);
 
   const totalPages = Math.ceil(total / pageSize);
 
-  const handleSearch = async () => {
-    await fetchProducts();
-  };
-
   return (
     <div>
-      {/* HEADER */}
-      <Card>
-        <div className="flex justify-between items-center mb-3">
+      {/* HEADER REUTILIZABLE */}
+      <UserHeaderMenu
+        title="Productos"
+        totalItems={totalItems}
+        onGoCart={() => navigate("/cart")}
+        onGoProducts={null}
+        onOpenLogin={() => setOpenLoginModal(true)}
+        onOpenRegister={() => setOpenRegisterModal(true)}
+        onOpenMobileMenu={() => setOpenCartMenu(true)}
+        search={{
+          value: searchTerm,
+          onChange: (e) => setSearchTerm(e.target.value),
+          onSearch: fetchProducts,
+        }}
+      />
 
-          {/* Título */}
-          <h1 className="text-3xl">Productos</h1>
+      {/* MOBILE MENU REUTILIZABLE */}
+      <MobileSideMenu
+        isOpen={openCartMenu}
+        onClose={() => setOpenCartMenu(false)}
+        title="Menú"
+        onGoCart={() => {
+          setOpenCartMenu(false);
+          navigate("/cart");
+        }}
+        onGoProducts={null}
+        totalItems={totalItems}
+        onOpenLogin={() => {
+          setOpenCartMenu(false);
+          setOpenLoginModal(true);
+        }}
+        onOpenRegister={() => {
+          setOpenCartMenu(false);
+          setOpenRegisterModal(true);
+        }}
+      />
 
-          {/* BUSCADOR DESKTOP */}
-          <div className="hidden sm:flex flex-1 px-6">
-            <SearchBar
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              onSearch={handleSearch}
-            />
-          </div>
-
-          {/* BUSCADOR MOBILE */}
-          <div className="sm:hidden w-full">
-            <SearchBar
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              onSearch={handleSearch}
-            />
-          </div>
-
-          {/* DERECHA DESKTOP */}
-          <div className="hidden sm:flex items-center gap-3">
-            <Button onClick={() => navigate("/cart")}>
-              Carrito ({totalItems})
-            </Button>
-
-            <Button onClick={() => setOpenLoginModal(true)}>
-              Iniciar Sesión
-            </Button>
-
-            <Button onClick={() => setOpenRegisterModal(true)}>
-              Registrarse
-            </Button>
-          </div>
-
-          {/* MENÚ MOBILE */}
-          <Button
-            className="sm:hidden h-8 w-8 p-1 flex items-center justify-center"
-            onClick={() => setOpenCartMenu(true)}
-          >
-            ≡
-          </Button>
-        </div>
-      </Card>
-
-      {/* PANEL CARRITO MOBILE */}
+      {/* PRODUCT LIST */}
       <div
-        className={`
-          fixed top-0 right-0 h-full w-64 bg-white shadow-lg p-6
-          transition-transform duration-300 z-50
-          ${openCartMenu ? "translate-x-0" : "translate-x-full"}
-          sm:hidden
-        `}
-      >
-        <h2 className="text-xl mb-4">Carrito</h2>
-
-        <Button
-          className="text-xl mt-4 w-full"
-          onClick={() => {
-            setOpenCartMenu(false);
-            navigate("/cart");
-          }}
-        >
-          Ver carrito ({totalItems})
-        </Button>
-
-        <Button
-          className="text-xl mt-4 w-full"
-          onClick={() => {
-            setOpenCartMenu(false);
-            setOpenLoginModal(true);
-          }}
-        >
-          Iniciar Sesión
-        </Button>
-
-        <Button
-          className="text-xl mt-4 w-full"
-          onClick={() => {
-            setOpenCartMenu(false);
-            setOpenRegisterModal(true);
-          }}
-        >
-          Registrarse
-        </Button>
-
-        <Button
-          className="text-xl mt-4 w-full"
-          onClick={() => setOpenCartMenu(false)}
-        >
-          Cerrar ✘
-        </Button>
-      </div>
-
-      {/* LISTA DE PRODUCTOS */}
-      <div className="
+        className="
         mt-4 flex flex-col gap-4
         sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4
-      ">
+      "
+      >
         {loading ? (
           <span>Buscando productos...</span>
         ) : (
@@ -208,16 +141,13 @@ function ListProductsUserPage() {
                   Stock: {product.stockQuantity} – ${product.currentUnitPrice}
                 </p>
 
-                {/* Cantidad */}
                 <div className="flex items-center gap-4 mt-3">
-
-                  {/* - */}
                   <Button
                     className="px-2 py-1 text-sm sm:px-3 sm:py-2 sm:text-base"
                     onClick={() =>
-                      setQuantities(prev => ({
+                      setQuantities((prev) => ({
                         ...prev,
-                        [product.sku]: Math.max(1, qty - 1)
+                        [product.sku]: Math.max(1, qty - 1),
                       }))
                     }
                   >
@@ -228,20 +158,21 @@ function ListProductsUserPage() {
                     {qty}
                   </span>
 
-                  {/* + */}
                   <Button
                     className="px-2 py-1 text-sm sm:px-3 sm:py-2 sm:text-base"
                     onClick={() =>
-                      setQuantities(prev => ({
+                      setQuantities((prev) => ({
                         ...prev,
-                        [product.sku]: Math.min(product.stockQuantity, qty + 1)
+                        [product.sku]: Math.min(
+                          product.stockQuantity,
+                          qty + 1
+                        ),
                       }))
                     }
                   >
                     ➕
                   </Button>
 
-                  {/* AGREGAR */}
                   <Button
                     className="ml-50 sm:ml-5 text-sm px-4 py-2 sm:text-base"
                     onClick={() => addToCart(product, qty)}
@@ -255,7 +186,7 @@ function ListProductsUserPage() {
         )}
       </div>
 
-      {/* PAGINACIÓN */}
+      {/* PAGINATION */}
       <div className="flex justify-center items-center mt-3">
         <button
           disabled={pageNumber === 1}
@@ -292,7 +223,7 @@ function ListProductsUserPage() {
         </select>
       </div>
 
-      {/* MODALES */}
+      {/* MODALS */}
       <LoginModal
         isOpen={openLoginModal}
         onClose={() => setOpenLoginModal(false)}
@@ -307,3 +238,4 @@ function ListProductsUserPage() {
 }
 
 export default ListProductsUserPage;
+
