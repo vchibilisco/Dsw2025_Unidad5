@@ -27,15 +27,16 @@ function LoginForm() {
 
         return;
       }
+
       navigate('/admin/home');
-      
+
     } catch (error) {
       if (error?.response?.data?.code) {
         setErrorMessage(frontendErrorMessage[error?.response?.data?.code]);
       } else if (error?.response?.data) {
 
-    setErrorMessage('Usuario o contraseña incorrectos');
-  } else {
+        setErrorMessage('Usuario o contraseña incorrectos');
+      } else {
         setErrorMessage('Llame a soporte');
       }
     }
@@ -49,12 +50,15 @@ function LoginForm() {
         bg-white
         p-8
         sm:w-md
-        sm:rounded-lg
-        sm:shadow-lg
+        mx-auto
+        w-[70%]
+        rounded-lg
+        shadow-lg
       '
     onSubmit={handleSubmit(onValid)}
     >
       <Input
+        className='h-10 text-base'
         label='Usuario'
         { ...register('username', {
           required: 'Usuario es obligatorio',
@@ -62,6 +66,7 @@ function LoginForm() {
         error={errors.username?.message}
       />
       <Input
+        className='h-10 text-base'
         label='Contraseña'
         { ...register('password', {
           required: 'Contraseña es obligatorio',
@@ -70,17 +75,17 @@ function LoginForm() {
         error={errors.password?.message}
       />
 
-      <Button type='submit' className='w-full text-sm font-medium'>Iniciar Sesión</Button>
+      <Button type='submit' className='w-full text-base font-medium'>Iniciar Sesión</Button>
       <Button
-      className='w-full text-sm font-medium'
-  variant='secondary'
-  type='button'
-  onClick={() => {
-      navigate('/signup');
-  }}
->
-  Registrar Usuario
-</Button>
+        className='w-full text-base font-medium'
+        variant='secondary'
+        type='button'
+        onClick={() => {
+          navigate('/signup');
+        }}
+      >
+      Registrar Usuario
+      </Button>
       {errorMessage && <p className='text-red-500'>{errorMessage}</p>}
     </form>
   );

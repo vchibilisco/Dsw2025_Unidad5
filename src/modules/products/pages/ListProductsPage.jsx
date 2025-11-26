@@ -81,9 +81,9 @@ function ListProductsPage() {
             </Button>
           </div>
           <select onChange={evt => setStatus(evt.target.value)} className='text-[1.3rem]'>
-            <option value={productStatus.ALL}>Todos</option>
-            <option value={productStatus.ENABLED}>Habilitados</option>
-            <option value={productStatus.DISABLED}>Inhabilitados</option>
+            <option className='text-sm' value={productStatus.ALL}>Todos</option>
+            <option className='text-sm' value={productStatus.ENABLED}>Habilitados</option>
+            <option className='text-sm' value={productStatus.DISABLED}>Inhabilitados</option>
           </select>
         </div>
       </Card>
@@ -105,15 +105,15 @@ function ListProductsPage() {
         <button
           disabled={pageNumber === 1}
           onClick={() => setPageNumber(pageNumber - 1)}
-          className='bg-gray-200 disabled:bg-gray-100'
+          className='bg-gray-200 disabled:bg-gray-100 text-base'
         >
           Atras
         </button>
-        <span>{pageNumber} / {totalPages}</span>
+        <span className='text-base'>{pageNumber} / {totalPages}</span>
         <button
           disabled={ pageNumber === totalPages }
           onClick={() => setPageNumber(pageNumber + 1)}
-          className='bg-gray-200 disabled:bg-gray-100'
+          className='bg-gray-200 disabled:bg-gray-100 text-base'
         >
           Siguiente
         </button>
@@ -124,7 +124,7 @@ function ListProductsPage() {
             setPageNumber(1);
             setPageSize(Number(evt.target.value));
           }}
-          className='ml-3'
+          className='ml-3 text-base'
         >
           <option value="2">2</option>
           <option value="10">10</option>

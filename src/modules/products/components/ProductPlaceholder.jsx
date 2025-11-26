@@ -5,7 +5,7 @@ function ProductPlaceholder({ product, onQuantityChange, onDelete }) {
   const subtotal = unitPrice * product.quantity;
 
   return (
-    <Card className='w-full shadow-sm text-sm sm:text-base p-4 space-y-3'>
+    <Card className='w-full shadow-sm text-sm sm:text-base p-5 space-y-3'>
       <div className='font-semibold text-gray-800 truncate text-2xl'>
         {product?.name ?? 'Nombre de producto'}
       </div>

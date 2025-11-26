@@ -8,7 +8,6 @@ import { useOutletContext } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import UserLoginForm from '../../auth/components/UserLoginForm';
 
-
 function ShoppingCart() {
   const [cartItems, setCartItems] = useState([]);
 
@@ -30,7 +29,7 @@ function ShoppingCart() {
 
   useEffect(() => {
     if (isAuthenticated && pendingCheckout) {
-      handleCheckout(); 
+      handleCheckout();
       setPendingCheckout(false);
     }
   }, [isAuthenticated, pendingCheckout]);
@@ -44,9 +43,11 @@ function ShoppingCart() {
 
         if (newQuantity === 0) {
           removeFromCart(sku);
+
           return null;
         } else {
           updateCartItemQuantity(sku, newQuantity);
+
           return { ...item, quantity: newQuantity };
         }
       })
@@ -64,14 +65,16 @@ function ShoppingCart() {
     if (!isAuthenticated) {
       setPendingCheckout(true);
       setShowLoginModal(true);
+
       return;
     }
 
     const cartItems = getCart();
-    
+
     if (!customerId || cartItems.length === 0) {
-      
+
       alert('No se puede procesar la orden: faltan datos');
+
       return;
     }
 
@@ -152,26 +155,25 @@ function ShoppingCart() {
       </div>
       {showLoginModal && (
 
-  <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/30 px-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/30 px-4">
 
-    <div className="relative w-full max-w-md bg-white rounded-lg shadow-lg p-6 sm:p-8">
+          <div className="relative w-full max-w-md bg-white rounded-lg shadow-lg p-6 sm:p-8">
 
-      <button
-        className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 transition-colors"
-        onClick={() => setShowLoginModal(false)}
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
+            <button
+              className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 transition-colors"
+              onClick={() => setShowLoginModal(false)}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
 
-      <UserLoginForm
-        onSuccess={() => {setShowLoginModal(false);}}
-      />
-    </div>
-  </div>
-)}
-
+            <UserLoginForm
+              onSuccess={() => { setShowLoginModal(false); }}
+            />
+          </div>
+        </div>
+      )}
 
     </div>
   );

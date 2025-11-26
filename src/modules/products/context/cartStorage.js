@@ -24,8 +24,11 @@ export const saveCart = (cartItems) => {
   localStorage.setItem(CART_KEY, JSON.stringify(cartItems));
 };
 
-// Agrega producto al carrito, sumando si ya existe
+// Agrega producto al carrito, sumando si ya existe,
+// limitando la cantidad final al stock disponible.
 export const addToCart = (product, quantity) => {
+
+  // 1. Validación de entrada
 
   if (!product || typeof product.sku !== 'string' || quantity <= 0) {
     console.warn('addToCart recibió datos inválidos:', { product, quantity });
@@ -33,19 +36,49 @@ export const addToCart = (product, quantity) => {
     return;
   }
 
-  const cart = getCart();
+  // Asegurarse de que tenemos el stock
+  const stockAvailable = product.stockQuantity;
 
+  if (typeof stockAvailable !== 'number' || stockAvailable <= 0) {
+    console.warn('Producto sin stock disponible o stock no definido:', product.sku);
+
+    return;
+  }
+
+  const cart = getCart();
   const existing = cart.find((item) => item.sku === product.sku);
 
-  const updatedCart = existing
-    ? cart.map((item) =>
-      item.sku === product.sku
-        ? { ...item, quantity: item.quantity + quantity }
-        : item,
-    )
-    : [...cart, { ...product, quantity }];
+  // 2. Calcular la cantidad total deseada y aplicar el límite
 
-  saveCart(updatedCart);
+  // Cantidad actual del producto en el carrito (o 0 si es nuevo)
+  const currentQuantity = existing ? existing.quantity : 0;
+
+  // Cantidad que el usuario quiere tener después de esta adición
+  const desiredQuantity = currentQuantity + quantity;
+
+  // La cantidad final es el menor valor entre lo deseado y el stock disponible
+  const finalQuantity = Math.min(desiredQuantity, stockAvailable);
+
+  // 3. Opcional: Mostrar advertencia si se aplicó el límite
+  if (finalQuantity < desiredQuantity) {
+    console.warn(
+      `Se ha limitado la cantidad de ${product.name} a ${finalQuantity} unidades debido al stock disponible.`,
+    );
+  }
+
+  // 4. Actualizar el carrito solo si la cantidad final es mayor que 0
+  if (finalQuantity > 0) {
+
+    const updatedCart = existing
+      ? cart.map((item) =>
+        item.sku === product.sku
+          ? { ...item, quantity: finalQuantity } // Usar la cantidad limitada
+          : item,
+      )
+      : [...cart, { ...product, quantity: finalQuantity }];
+
+    saveCart(updatedCart);
+  }
 };
 
 // Elimina producto por SKU

@@ -26,7 +26,6 @@ function UserRegisterForm({ onSuccess }) {
 
   const { signup } = useAuth();
 
-
   const onValid = async (formData) => {
     const payload = {
       userName: formData.userName,
@@ -45,122 +44,124 @@ function UserRegisterForm({ onSuccess }) {
 
         return;
       }
-      onSuccess(); 
+
+      onSuccess();
 
     } catch (error) {
-        const data = error?.response?.data;
-        if (Array.isArray(data) && data.length > 0) {
-            // Usa la descripción que viene del backend
-            setErrorMessage(data[0].description);
-        } else if (data?.code) {
-            setErrorMessage(frontendErrorMessage[data.code] || 'Nombre de Usuario ya existe');
-        } else {
-            setErrorMessage('Llame a soporte');
-        }
+      const data = error?.response?.data;
+
+      if (Array.isArray(data) && data.length > 0) {
+        // Usa la descripción que viene del backend
+        setErrorMessage(data[0].description);
+      } else if (data?.code) {
+        setErrorMessage(frontendErrorMessage[data.code] || 'Nombre de Usuario ya existe');
+      } else {
+        setErrorMessage('Llame a soporte');
+      }
     }
 
   };
 
   return (
-    
-      <form
-        className='w-full flex flex-col gap-4'
-        onSubmit={handleSubmit(onValid)}
-      >
-        <Input
-          label="Usuario"
-          placeholder="Ingresar usuario"
-          {...register('userName', {
-            required: 'Usuario es obligatorio',
-          })}
-          error={errors.userName?.message}
-          className="text-xs p-2"
-        />
 
-        <Input
-          label="Email"
-          type="email"
-          placeholder="Ingresar email"
-          {...register('email', {
-            required: 'Email es obligatorio',
-            pattern: {
-              value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-              message: 'Email inválido',
-            },
-          })}
-          error={errors.email?.message}
-          className="text-xs p-2"
-        />
+    <form
+      className='w-full flex flex-col gap-4'
+      onSubmit={handleSubmit(onValid)}
+    >
+      <Input
+        label="Usuario"
+        placeholder="Ingresar usuario"
+        {...register('userName', {
+          required: 'Usuario es obligatorio',
+        })}
+        error={errors.userName?.message}
+        className="text-xs p-2"
+      />
 
-        <Input
-          label="Nombre completo"
-          placeholder="Ingresar nombre"
-          {...register('name', {
-            required: 'El nombre es obligatorio',
-            minLength: { value: 2, message: 'Debe tener al menos 2 caracteres' },
-          })}
-          error={errors.name?.message}
-          className="text-xs p-2"
-        />
+      <Input
+        label="Email"
+        type="email"
+        placeholder="Ingresar email"
+        {...register('email', {
+          required: 'Email es obligatorio',
+          pattern: {
+            value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+            message: 'Email inválido',
+          },
+        })}
+        error={errors.email?.message}
+        className="text-xs p-2"
+      />
 
-        <Input
-          label="Contraseña"
-          type="password"
-          autoComplete="new-password"
-          placeholder="Ingresar contraseña"
-          {...register('password', {
-            required: 'Contraseña es obligatorio',
-            minLength: { value: 8, message: 'Mínimo 8 caracteres' },
-            pattern: {
-              value:
-                /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
-              message:
-                'Debe incluir mayúscula, minúscula, número y símbolo',
-            },
-          })}
-          error={errors.password?.message}
-          className="text-xs p-2"
-        />
+      <Input
+        label="Nombre completo"
+        placeholder="Ingresar nombre"
+        {...register('name', {
+          required: 'El nombre es obligatorio',
+          minLength: { value: 2, message: 'Debe tener al menos 2 caracteres' },
+        })}
+        error={errors.name?.message}
+        className="text-xs p-2"
+      />
 
-        <Input
-          label="Confirmar Contraseña"
-          type="password"
-          autoComplete="new-password"
-          placeholder="Repetir contraseña"
-          {...register('confirmPassword', {
-            required: 'La confirmación es obligatoria',
-            validate: (value) =>
-              value === watch('password') || 'Las contraseñas no coinciden',
-          })}
-          error={errors.confirmPassword?.message}
-          className="text-xs p-2"
-        />
+      <Input
+        label="Contraseña"
+        type="password"
+        autoComplete="new-password"
+        placeholder="Ingresar contraseña"
+        {...register('password', {
+          required: 'Contraseña es obligatorio',
+          minLength: { value: 8, message: 'Mínimo 8 caracteres' },
+          pattern: {
+            value:
+              /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+            message:
+              'Debe incluir mayúscula, minúscula, número y símbolo',
+          },
+        })}
+        error={errors.password?.message}
+        className="text-xs p-2"
+      />
 
-        <Input
-          label="Teléfono"
-          placeholder="Ingresar número de teléfono"
-          {...register('phoneNumber', {
-            required: 'El número de teléfono es obligatorio',
-            pattern: {
-              value: /^[0-9]{7,15}$/,
-              message: 'Número inválido',
-            },
-          })}
-          error={errors.phoneNumber?.message}
-          className="text-xs p-2"
-        />
+      <Input
+        label="Confirmar Contraseña"
+        type="password"
+        autoComplete="new-password"
+        placeholder="Repetir contraseña"
+        {...register('confirmPassword', {
+          required: 'La confirmación es obligatoria',
+          validate: (value) =>
+            value === watch('password') || 'Las contraseñas no coinciden',
+        })}
+        error={errors.confirmPassword?.message}
+        className="text-xs p-2"
+      />
 
-        <div className="flex flex-col sm:flex-row gap-2 mt-2">
-          <Button type="submit" className="w-full  text-xs">
-            Registrar Usuario
-          </Button>
-        </div>
+      <Input
+        label="Teléfono"
+        placeholder="Ingresar número de teléfono"
+        {...register('phoneNumber', {
+          required: 'El número de teléfono es obligatorio',
+          pattern: {
+            value: /^[0-9]{7,15}$/,
+            message: 'Número inválido',
+          },
+        })}
+        error={errors.phoneNumber?.message}
+        className="text-xs p-2"
+      />
 
-        {errorMessage && (
-          <p className="text-red-500 text-xs text-center">{errorMessage}</p>
-        )}
-      </form>
-    
+      <div className="flex flex-col sm:flex-row gap-2 mt-2">
+        <Button type="submit" className="w-full  text-xs">
+          Registrar Usuario
+        </Button>
+      </div>
+
+      {errorMessage && (
+        <p className="text-red-500 text-xs text-center">{errorMessage}</p>
+      )}
+    </form>
+
   );
 }
 

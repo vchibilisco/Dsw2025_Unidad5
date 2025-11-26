@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import Button from '../../shared/components/Button';
 import Card from '../../shared/components/Card';
 import { getOrdersWithCustomerName } from '../services/listServices';
@@ -24,7 +23,6 @@ const mapOrderStatus = (status) => {
 };
 
 function ListOrdersPage() {
-  const navigate = useNavigate();
 
   const [selectedOrder, setSelectedOrder] = useState(null);
 
@@ -36,58 +34,60 @@ function ListOrdersPage() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
   const getShortId = (id) => {
-        if (!id || typeof id !== 'string') return '';
-        // Toma los primeros 8 caracteres del UUID para una referencia corta
-        return id.slice(0, 8).toUpperCase();
-    };
+    if (!id || typeof id !== 'string') return '';
+    // Toma los primeros 8 caracteres del UUID para una referencia corta
+
+    return id.slice(0, 8).toUpperCase();
+  };
 
   const fetchOrders = async () => {
-  try {
-    setLoading(true);
-    const { data, error } = await getOrdersWithCustomerName(searchTerm, status, pageNumber, pageSize);
-    if (error) throw error;
+    try {
+      setLoading(true);
+      const { data, error } = await getOrdersWithCustomerName(searchTerm, status, pageNumber, pageSize);
 
-    console.log('Respuesta de getOrdersWithCustomerName:', data);
+      if (error) throw error;
 
-    setOrders(Array.isArray(data.orders) ? data.orders : []);
-    setTotal(typeof data.total === 'number' ? data.total : 0);
-  } catch (error) {
-    console.error('Error al obtener órdenes:', error);
-  } finally {
-    setLoading(false);
-  }
-};
+      console.log('Respuesta de getOrdersWithCustomerName:', data);
+
+      setOrders(Array.isArray(data.orders) ? data.orders : []);
+      setTotal(typeof data.total === 'number' ? data.total : 0);
+    } catch (error) {
+      console.error('Error al obtener órdenes:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     fetchOrders();
   }, [status, pageNumber, pageSize]);
 
   const totalPages = Math.ceil(total / pageSize);
-  
+
   const getVisiblePages = () => {
     const pages = [];
 
-  if (totalPages <= 3) {
-    // Mostrar todas si son 3 o menos
-    for (let i = 1; i <= totalPages; i++) pages.push(i);
-  } else if (totalPages === 4) {
-    if (pageNumber <= 2) {
-      pages.push(1, 2, '…', 4);
+    if (totalPages <= 3) {
+      // Mostrar todas si son 3 o menos
+      for (let i = 1; i <= totalPages; i++) pages.push(i);
+    } else if (totalPages === 4) {
+      if (pageNumber <= 2) {
+        pages.push(1, 2, '…', 4);
+      } else {
+        pages.push(2, 3, 4);
+      }
     } else {
-      pages.push(2, 3, 4);
+      if (pageNumber <= 2) {
+        pages.push(1, 2, '…', totalPages);
+      } else if (pageNumber >= totalPages - 1) {
+        pages.push(1, '…', totalPages - 1, totalPages);
+      } else {
+        pages.push(pageNumber - 1, pageNumber, pageNumber + 1);
+      }
     }
-  } else {
-    if (pageNumber <= 2) {
-      pages.push(1, 2, '…', totalPages);
-    } else if (pageNumber >= totalPages - 1) {
-      pages.push(1, '…', totalPages - 1, totalPages);
-    } else {
-      pages.push(pageNumber - 1, pageNumber, pageNumber + 1);
-    }
-  }
 
-  return pages;
-};
+    return pages;
+  };
 
   const visiblePages = getVisiblePages();
 
@@ -137,18 +137,27 @@ function ListOrdersPage() {
         {loading ? (
           <span>Buscando órdenes...</span>
         ) : (
-          orders.map((order) => (
-
-            <Card key={order.orderId} className='flex justify-between items-center px-4 py-3'>
-              <div>
-                <h2 className='text-xl font-semibold'>{getShortId(order.orderId)} - {order.customerName}</h2>
-                <p className="text-base">Estado: {mapOrderStatus(order.orderStatus)}</p>
+          <>
+            {orders.length === 0 ? (
+              <div className='bg-white p-6 rounded-lg shadow-lg text-center text-gray-500'>
+                <h2 className='text-xl font-semibold mb-2'>No se encontraron órdenes.</h2>
+                <p>Ajusta el filtro de estado o el término de búsqueda y vuelve a intentarlo.</p>
               </div>
-              <Button 
-              className='h-8 w-10'
-              onClick={() => setSelectedOrder(order)}><p className='text-base'>Ver</p></Button>
-            </Card>
-          ))
+            ) : (
+              orders.map((order) => (
+
+                <Card key={order.orderId} className='flex justify-between items-center px-4 py-3'>
+                  <div>
+                    <h2 className='text-xl font-semibold'>{getShortId(order.orderId)} - {order.customerName}</h2>
+                    <p className="text-base">Estado: {mapOrderStatus(order.orderStatus)}</p>
+                  </div>
+                  <Button
+                    className='h-8 w-10'
+                    onClick={() => setSelectedOrder(order)}><p className='text-base'>Ver</p></Button>
+                </Card>
+              ))
+            )}
+          </>
         )}
       </div>
 
@@ -156,39 +165,38 @@ function ListOrdersPage() {
         <button
           disabled={pageNumber === 1}
           onClick={() => setPageNumber(pageNumber - 1)}
-          className='px-4 py-2 text-sm sm:text-base bg-gray-200 disabled:bg-gray-100 rounded-md w-full max-w-[140px]'
+          className='px-4 py-2 text-xs sm:text-base bg-gray-200 disabled:bg-gray-100 rounded-md w-full max-w-[140px]'
         >
           ← Anterior
         </button>
 
-        <div className='hidden sm:flex gap-2'>
-  {visiblePages.map((page, idx) =>
-    typeof page === 'number' ? (
-      <button
-        key={idx}
-        onClick={() => setPageNumber(page)}
-        className={`px-3 py-1 ${pageNumber === page ? 'bg-black text-white' : 'bg-gray-200'}`}
-      >
-        {page}
-      </button>
-    ) : (
-      <span key={idx} className='px-3 py-1'>…</span>
-    )
-  )}
-</div>
-
+        <div className='hidden md:flex gap-2'>
+          {visiblePages.map((page, idx) =>
+            typeof page === 'number' ? (
+              <button
+                key={idx}
+                onClick={() => setPageNumber(page)}
+                className={`px-3 py-1 ${pageNumber === page ? 'bg-black text-white' : 'bg-gray-200'}`}
+              >
+                {page}
+              </button>
+            ) : (
+              <span key={idx} className='px-3 py-1'>…</span>
+            ),
+          )}
+        </div>
 
         <button
           disabled={pageNumber === totalPages}
           onClick={() => setPageNumber(pageNumber + 1)}
-          className='px-4 py-2 text-sm sm:text-base bg-gray-200 disabled:bg-gray-100 rounded-md w-full max-w-[140px]'
+          className='px-4 py-2 text-xs sm:text-base bg-gray-200 disabled:bg-gray-100 rounded-md w-full max-w-[140px]'
         >
           Siguiente →
         </button>
       </div>
       {selectedOrder && (
         <div className='fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-50'>
-          <div className='bg-white p-6 rounded-lg shadow-lg w-full max-w-sm sm:max-w-md mx-4'>
+          <div className='bg-white p-6 rounded-lg shadow-lg w-full max-w-sm sm:max-w-md mx-4 max-h-[90vh] flex flex-col'>
             <h2 className='text-xl font-bold mb-2'>Detalle de Orden:</h2>
             <p className='text-sm sm:text-base'><strong>Orden ID:</strong> {selectedOrder.orderId}</p>
             <p className='text-sm sm:text-base'><strong>Cliente:</strong> {selectedOrder.customerName}</p>
@@ -197,7 +205,7 @@ function ListOrdersPage() {
             <p className='text-sm sm:text-base'><strong>Notas:</strong> {selectedOrder.notes || 'Sin notas'}</p>
             <p className='text-sm sm:text-base'><strong>Estado:</strong> {mapOrderStatus(selectedOrder.orderStatus)}</p>
 
-            <div className='mt-4'>
+            <div className='mt-4 flex-grow overflow-y-auto px-2 border-2 rounded '>
               <h3 className='font-semibold mb-2 text-base sm:text-lg'>Items:</h3>
               {selectedOrder.orderItems.map((item, index) => (
                 <div key={index} className='mb-2 border-b pb-2'>
@@ -209,7 +217,7 @@ function ListOrdersPage() {
               ))}
             </div>
 
-            <div className='mt-4 text-right'>
+            <div className='mt-4 text-right flex-shrink-0'>
               <Button onClick={() => setSelectedOrder(null)}><p className='text-sm sm:text-base'>Cerrar</p></Button>
             </div>
           </div>

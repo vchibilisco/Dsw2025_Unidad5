@@ -10,6 +10,7 @@ function ProtectedRoute({ children }) {
 
   if (role === 'Customer') {
     alert('No tienes permisos para acceder a esta sección');
+
     return <Navigate to='/' />;
   }
 

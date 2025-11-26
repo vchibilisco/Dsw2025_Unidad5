@@ -8,9 +8,9 @@ function Input({ label, error = '', ...restProps }) {
       '
     >
       <label className='
-        text-sm             
-        font-medium 
-        text-gray-700 
+        text-sm
+        font-medium
+        text-gray-700
         mb-1
         sm:text-base'
       >{label}:</label>

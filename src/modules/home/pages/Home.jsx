@@ -2,27 +2,25 @@ import Card from '../../shared/components/Card';
 import { useEffect, useState } from 'react';
 import { getOrderCount, getProductCount } from './services/dashboardServices';
 
-
 function Home() {
 
   const [orderCount, setOrderCount] = useState(null);
   const [productCount, setProductCount] = useState(null);
 
   useEffect(() => {
-  const fetchCounts = async () => {
-    const [{ data: orders, error: orderError }, { data: products, error: productError }] = await Promise.all([
-      getOrderCount(),
-      getProductCount(),
-    ]);
+    const fetchCounts = async () => {
+      const [{ data: orders, error: orderError }, { data: products, error: productError }] = await Promise.all([
+        getOrderCount(),
+        getProductCount(),
+      ]);
 
-    if (!orderError) setOrderCount(orders);
-    if (!productError) setProductCount(products);
-  };
+      if (!orderError) setOrderCount(orders);
 
-  fetchCounts();
-}, []);
+      if (!productError) setProductCount(products);
+    };
 
-
+    fetchCounts();
+  }, []);
 
   return (
     <div

@@ -24,15 +24,16 @@ function UserLoginForm({ onSuccess }) {
 
         return;
       }
-      onSuccess(); 
-      
+
+      onSuccess();
+
     } catch (error) {
       if (error?.response?.data?.code) {
         setErrorMessage(frontendErrorMessage[error?.response?.data?.code]);
       } else if (error?.response?.data) {
-    
-    setErrorMessage('Usuario o contraseña incorrectos');
-  } else {
+
+        setErrorMessage('Usuario o contraseña incorrectos');
+      } else {
         setErrorMessage('Llame a soporte');
       }
     }
@@ -44,7 +45,6 @@ function UserLoginForm({ onSuccess }) {
         flex-col
         gap-4
         w-full
-        
       '
     onSubmit={handleSubmit(onValid)}
     >
@@ -65,7 +65,7 @@ function UserLoginForm({ onSuccess }) {
       />
 
       <Button type='submit' className='w-full mt-2 text-sm font-medium'>Iniciar Sesión</Button>
-      
+
       {errorMessage && <p className='text-red-500'>{errorMessage}</p>}
     </form>
   );

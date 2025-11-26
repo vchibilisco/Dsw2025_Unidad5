@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 
 export default ({ mode }) => {
-  const env = loadEnv(mode, process.cwd(), '');
+  const env = loadEnv(mode, '', '');
   const target = env.VITE_BACKEND_URL || 'http://localhost:5001/';
 
   return defineConfig({
