@@ -53,7 +53,7 @@ function CartPage() {
       billingAddress: "Sin especificar",
       notes: "",
       orderItems: cart.map((item) => ({
-        productId:  item.productId ?? "e2f1d0c9-b8a7-6c5d-4e3f-2a1b0c9d8e7f",  
+        productId:  item.productId,  
         quantity: item.quantity,
       })),
     };

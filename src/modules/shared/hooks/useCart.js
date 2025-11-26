@@ -21,15 +21,17 @@ export function useCart() {
     const updated = [...cart];
     const existing = updated.find((i) => i.sku === product.sku);
 
-    if (existing) {
-      existing.quantity += quantity;
-    } else {
-      updated.push({
-        ...product,
-        quantity,
-      });
-    }
+     const productToAdd = {
+    ...product,
+    quantity,
+    productId: product.id ?? product.sku, // <-- agregamos productId
+  };
 
+  if (existing) {
+    existing.quantity += quantity;
+  } else {
+    updated.push(productToAdd);
+  }
     save(updated);
   };
 
