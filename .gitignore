@@ -27,4 +27,4 @@ dist-ssr
 node_modules/
 jspm_packages/
 .bower_components/
-Dsw2025TPI\.env.development
+.env.development
