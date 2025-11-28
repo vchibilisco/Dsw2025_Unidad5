@@ -110,6 +110,18 @@ function ShoppingCart() {
     0,
   );
 
+  const handleLoginSuccess = () => {
+    setShowLoginModal(false);
+    const userRole = localStorage.getItem('role');
+
+    if (userRole === 'Admin') {
+      clearCart();
+      setCartItems([]);
+      setPendingCheckout(false);
+      navigate('/admin/home');
+    }
+  };
+
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:justify-between">
       <div className="flex flex-col gap-4 sm:w-2/3">
@@ -169,7 +181,7 @@ function ShoppingCart() {
             </button>
 
             <UserLoginForm
-              onSuccess={() => { setShowLoginModal(false); }}
+              onSuccess={handleLoginSuccess}
             />
           </div>
         </div>

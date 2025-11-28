@@ -1,10 +1,11 @@
-import { useState } from 'react';
-import { NavLink, Outlet } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import Button from '../../shared/components/Button';
 import useAuth from '../../auth/hook/useAuth';
 import UserLoginForm from '../../auth/components/UserLoginForm';
 import UserRegisterForm from '../../auth/components/UserRegisterForm';
 import { searchCustomerProducts } from '../../products/services/listCustomer';
+import { clearCart } from '../../products/Context/cartStorage';
 
 export default function ClientDashboard() {
   const [openMenu, setOpenMenu] = useState(false);
@@ -17,6 +18,7 @@ export default function ClientDashboard() {
   const [showRegisterModal, setShowRegisterModal] = useState(false);
 
   const { isAuthenticated, signout } = useAuth();
+  const navigate = useNavigate();
 
   const getLinkStyles = ({ isActive }) => (
     `p-2 rounded-4xl transition hover:bg-gray-100 text-sm sm:text-base
@@ -77,6 +79,21 @@ export default function ClientDashboard() {
       )}
     </div>
   );
+
+  useEffect(() => {
+    // 1. Verificar si el usuario está autenticado
+    if (isAuthenticated) {
+      // 2. Obtener el rol (asumiendo que está en localStorage)
+      const userRole = localStorage.getItem('role');
+
+      // 3. Si el rol es 'Admin', redirigir
+      if (userRole === 'Admin') {
+        // Opcional: Podrías limpiar el carrito aquí si el Admin tiene productos en él
+        clearCart();
+        navigate('/admin/home');
+      }
+    }
+  }, [isAuthenticated, navigate]);
 
   return (
     <div className="min-h-screen grid grid-rows-[auto_1fr] bg-gray-50">

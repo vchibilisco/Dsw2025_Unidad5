@@ -29,7 +29,7 @@ function ListOrdersPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [status, setStatus] = useState(orderStatus.ALL);
   const [pageNumber, setPageNumber] = useState(1);
-  const [pageSize] = useState(3);
+  const [pageSize, setPageSize] = useState(3);
   const [total, setTotal] = useState(0);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -94,6 +94,12 @@ function ListOrdersPage() {
   const handleSearch = async () => {
     setPageNumber(1);
     await fetchOrders();
+  };
+
+  const handlePageSizeChange = (evt) => {
+    // 3. Implementación de lógica: Reiniciar la página a 1 y establecer el nuevo tamaño
+    setPageNumber(1);
+    setPageSize(Number(evt.target.value));
   };
 
   return (
@@ -165,9 +171,9 @@ function ListOrdersPage() {
         <button
           disabled={pageNumber === 1}
           onClick={() => setPageNumber(pageNumber - 1)}
-          className='px-4 py-2 text-xs sm:text-base bg-gray-200 disabled:bg-gray-100 rounded-md w-full max-w-[140px]'
+          className='px-1 py-2 text-xs sm:text-sm bg-gray-200 disabled:bg-gray-100 rounded-md w-full max-w-[140px]'
         >
-          ← Anterior
+          ← Previous
         </button>
 
         <div className='hidden md:flex gap-2'>
@@ -189,10 +195,20 @@ function ListOrdersPage() {
         <button
           disabled={pageNumber === totalPages}
           onClick={() => setPageNumber(pageNumber + 1)}
-          className='px-4 py-2 text-xs sm:text-base bg-gray-200 disabled:bg-gray-100 rounded-md w-full max-w-[140px]'
+          className='px-1 py-2 text-xs sm:text-sm bg-gray-200 disabled:bg-gray-100 rounded-md w-full max-w-[140px]'
         >
-          Siguiente →
+          Next →
         </button>
+        <select
+          value={pageSize}
+          onChange={handlePageSizeChange}
+          className='ml-3 text-xs sm:text-base border px-2 py-2 rounded-md'
+        >
+          <option value="3">3</option>
+          <option value="5">5</option>
+          <option value="10">10</option>
+          <option value="15">15</option>
+        </select>
       </div>
       {selectedOrder && (
         <div className='fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-50'>
