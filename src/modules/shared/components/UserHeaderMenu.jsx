@@ -1,5 +1,6 @@
 import Button from "./Button";
 import SearchBar from "./SearchBar";
+import useAuth from "../../auth/hook/useAuth";
 
 export default function UserHeaderMenu({
   title = "",
@@ -11,6 +12,8 @@ export default function UserHeaderMenu({
   onOpenRegister,
   onOpenMobileMenu,
 }) {
+  const { isAuthenticated, user, singout } = useAuth();
+
   return (
     <div className="mb-3">
       <div className="flex justify-between items-center">
@@ -42,7 +45,6 @@ export default function UserHeaderMenu({
 
         {/* BOTONES DESKTOP */}
         <div className="hidden sm:flex items-center gap-3">
-
           {onGoProducts && (
             <Button onClick={onGoProducts}>Volver</Button>
           )}
@@ -53,18 +55,36 @@ export default function UserHeaderMenu({
             </Button>
           )}
 
-          <Button onClick={onOpenLogin}>Iniciar Sesión</Button>
+          {!isAuthenticated ? (
+            <>
+              <Button onClick={onOpenLogin}>Iniciar Sesión</Button>
+              <Button onClick={onOpenRegister}>Registrarse</Button>
+            </>
+          ) : (
+            <>
+              <Button onClick={singout}>Cerrar sesión</Button>
 
-          <Button onClick={onOpenRegister}>Registrarse</Button>
+              {/* Nombre + Avatar */}
+              <div className="flex items-center gap-2 text-sm font-medium">
+                <img
+                  src="https://cdn-icons-png.freepik.com/512/12225/12225935.png"
+                  alt="avatar"
+                  className="w-8 h-8 rounded-full"
+                />
+                <span>{user.name}</span>
+              </div>
+            </>
+          )}
         </div>
 
-        {/* MOBILE MENU BUTTON */}
+        {/* BOTÓN MOBILE MENU */}
         <Button
           className="sm:hidden h-8 w-8 p-1 flex items-center justify-center"
           onClick={onOpenMobileMenu}
         >
           ≡
         </Button>
+
       </div>
     </div>
   );

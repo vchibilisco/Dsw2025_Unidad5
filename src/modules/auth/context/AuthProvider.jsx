@@ -1,20 +1,25 @@
-import { createContext, useState } from 'react';
+import { createContext, useState } from 'react'; 
 import { login } from '../services/login';
 import { register as registerService } from '../services/register';
 
 const AuthContext = createContext();
 
 function AuthProvider({ children }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    const token = localStorage.getItem('token');
-
-    return Boolean(token);
+  // Estado de user y autenticación
+  const [user, setUser] = useState(() => {
+    try {
+      const storedUser = localStorage.getItem('user');
+      if (!storedUser || storedUser === "undefined") return null;
+      return JSON.parse(storedUser);
+    } catch {
+      return null;
+    }
   });
 
-  const singout = () => {
-    localStorage.clear();
-    setIsAuthenticated(false);
-  };
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    const token = localStorage.getItem('token');
+    return Boolean(token);
+  });
 
   const singin = async (username, password) => {
     const { data, error } = await login(username, password);
@@ -23,35 +28,42 @@ function AuthProvider({ children }) {
       return { error };
     }
 
-    localStorage.setItem('token', data);
+    // Guardar token y user
+    localStorage.setItem('token', data.token);
+    localStorage.setItem('user', JSON.stringify(data.user));
+
+    setUser(data.user);
     setIsAuthenticated(true);
 
     return { error: null };
   };
 
+  const singout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setUser(null);
+    setIsAuthenticated(false);
+  };
+
   const register = async (username, password, email, role) => {
     const { error } = await registerService(username, password, email, role);
-
-    if (error) {
-      return { error };
-    }
-
-    return { error: null };
+    return { error: error || null };
   };
 
   return (
     <AuthContext.Provider
-      value={ {
+      value={{
         isAuthenticated,
+        user,
         singin,
         singout,
         register,
-      } }
+      }}
     >
       {children}
     </AuthContext.Provider>
   );
-};
+}
 
 export {
   AuthProvider,

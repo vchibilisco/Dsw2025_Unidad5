@@ -1,4 +1,5 @@
 import Button from "./Button";
+import useAuth from "../../auth/hook/useAuth";
 
 export default function MobileSideMenu({
   isOpen,
@@ -10,6 +11,8 @@ export default function MobileSideMenu({
   onOpenRegister,
   totalItems = 0,
 }) {
+  const { isAuthenticated, user, singout } = useAuth();
+
   return (
     <div
       className={`
@@ -19,7 +22,20 @@ export default function MobileSideMenu({
         sm:hidden
       `}
     >
-      <h2 className="text-xl mb-4">{title}</h2>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl">{title}</h2>
+
+        {isAuthenticated && user?.username && ( 
+          <div className="flex items-center gap-2">
+            <img
+              src="https://cdn-icons-png.freepik.com/512/12225/12225935.png"
+              alt="avatar"
+              className="w-8 h-8 rounded-full"
+            />
+            <span className="font-medium text-sm truncate">{user.username}</span>
+          </div>
+        )}
+      </div>
 
       {onGoProducts && (
         <Button className="text-xl mt-4 w-full" onClick={onGoProducts}>
@@ -33,13 +49,20 @@ export default function MobileSideMenu({
         </Button>
       )}
 
-      <Button className="text-xl mt-4 w-full" onClick={onOpenLogin}>
-        Iniciar Sesión
-      </Button>
-
-      <Button className="text-xl mt-4 w-full" onClick={onOpenRegister}>
-        Registrarse
-      </Button>
+      {!isAuthenticated ? (
+        <>
+          <Button className="text-xl mt-4 w-full" onClick={onOpenLogin}>
+            Iniciar Sesión
+          </Button>
+          <Button className="text-xl mt-4 w-full" onClick={onOpenRegister}>
+            Registrarse
+          </Button>
+        </>
+      ) : (
+        <Button className="text-xl mt-4 w-full" onClick={() => { singout(); onClose(); }}>
+          Cerrar sesión
+        </Button>
+      )}
 
       <Button className="text-xl mt-4 w-full" onClick={onClose}>
         Cerrar ✘
@@ -47,3 +70,4 @@ export default function MobileSideMenu({
     </div>
   );
 }
+
