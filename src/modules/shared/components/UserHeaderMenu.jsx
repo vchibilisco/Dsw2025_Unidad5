@@ -1,9 +1,9 @@
-import Button from "./Button";
-import SearchBar from "./SearchBar";
-import useAuth from "../../auth/hook/useAuth";
+import Button from './Button';
+import SearchBar from './SearchBar';
+import useAuth from '../../auth/hook/useAuth';
 
 export default function UserHeaderMenu({
-  title = "",
+  title = '',
   search = null,
   totalItems = 0,
   onGoCart,
@@ -13,6 +13,7 @@ export default function UserHeaderMenu({
   onOpenMobileMenu,
 }) {
   const { isAuthenticated, user, singout } = useAuth();
+  const displayName = user?.name || 'Usuario';
 
   return (
     <div className="mb-3">
@@ -68,10 +69,10 @@ export default function UserHeaderMenu({
               <div className="flex items-center gap-2 text-sm font-medium">
                 <img
                   src="https://cdn-icons-png.freepik.com/512/12225/12225935.png"
-                  alt="avatar"
+                  alt='avatar'
                   className="w-8 h-8 rounded-full"
                 />
-                <span>{user.name}</span>
+                <span>{displayName}</span>
               </div>
             </>
           )}

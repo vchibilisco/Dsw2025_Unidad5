@@ -1,9 +1,9 @@
-import Button from "./Button";
-import useAuth from "../../auth/hook/useAuth";
+import Button from './Button';
+import useAuth from '../../auth/hook/useAuth';
 
 export default function MobileSideMenu({
   isOpen,
-  title = "Menú",
+  title = 'Menú',
   onClose,
   onGoCart,
   onGoProducts,
@@ -18,14 +18,14 @@ export default function MobileSideMenu({
       className={`
         fixed top-0 right-0 h-full w-64 bg-white shadow-lg p-6
         transition-transform duration-300 z-50
-        ${isOpen ? "translate-x-0" : "translate-x-full"}
+        ${isOpen ? 'translate-x-0' : 'translate-x-full'}
         sm:hidden
       `}
     >
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl">{title}</h2>
 
-        {isAuthenticated && user?.username && ( 
+        {isAuthenticated && user?.username && (
           <div className="flex items-center gap-2">
             <img
               src="https://cdn-icons-png.freepik.com/512/12225/12225935.png"
@@ -70,4 +70,3 @@ export default function MobileSideMenu({
     </div>
   );
 }
-
