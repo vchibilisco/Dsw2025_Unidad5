@@ -1,6 +1,6 @@
 // src/auth/modals/LoginModal.jsx
-import Modal from "./Modal";
-import LoginForm from '../../auth/components/LoginForm';
+import Modal from "../../shared/components/Modal";
+import LoginForm from "../../auth/components/LoginForm";
 
 export default function LoginModal({ isOpen, onClose }) {
   return (

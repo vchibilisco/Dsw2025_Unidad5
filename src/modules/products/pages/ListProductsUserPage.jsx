@@ -4,10 +4,10 @@ import Button from "../../shared/components/Button";
 import Card from "../../shared/components/Card";
 import MobileSideMenu from "../../shared/components/MobileSideMenu";
 import UserHeaderMenu from "../../shared/components/UserHeaderMenu";
-import LoginModal from "../../cart/components/LoginModal";
-import RegisterModal from "../../cart/components/RegisterModal";
+import LoginModal from "../../auth/components/LoginModal";
+import RegisterModal from "../../auth/components/RegisterModal";
 import { getClientProducts } from "../services/listUser";
-import { useCart } from "../../shared/hooks/useCart";
+import { useCart } from "../../cart/hooks/useCart";
 
 function ListProductsUserPage() {
   const defaultProductImage =
@@ -127,6 +127,9 @@ function ListProductsUserPage() {
         ) : (
           products.map((product) => {
             const qty = quantities[product.sku] || 1;
+            const cartItem = cart.find((item) => item.sku === product.sku);
+            const inCartQty = cartItem?.quantity || 0;
+            const isMaxReached = qty + inCartQty > product.stockQuantity;
 
             return (
               <Card key={product.sku} className="flex flex-col">
@@ -141,16 +144,31 @@ function ListProductsUserPage() {
                   Stock: {product.stockQuantity} – ${product.currentUnitPrice}
                 </p>
 
+                {/* Mostrar si ya está en el carrito */}
+                  {(() => {
+                    const cartItem = cart.find((item) => item.sku === product.sku);
+                    if (!cartItem) return null;
+
+                    return (
+                      <p className="text-sm mt-1 text-green-600 font-medium">
+                        Ya tienes {cartItem.quantity} en el carrito.
+                      </p>
+                    );
+                  })()}
+
+
                 <div className="flex items-center gap-4 mt-3">
                   <Button
-                    className="px-2 py-1 text-sm sm:px-3 sm:py-2 sm:text-base"
+                   
                     onClick={() =>
-                      setQuantities((prev) => ({
-                        ...prev,
-                        [product.sku]: Math.max(1, qty - 1),
-                      }))
-                    }
-                  >
+                        setQuantities((prev) => ({
+                          ...prev,
+                          [product.sku]: Math.max(1, qty - 1),
+                        }))
+                      }
+                      disabled={qty <= 1}
+                      className="px-2 py-1 text-sm sm:px-3 sm:py-2 sm:text-base disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
                     ➖
                   </Button>
 
@@ -158,27 +176,46 @@ function ListProductsUserPage() {
                     {qty}
                   </span>
 
-                  <Button
-                    className="px-2 py-1 text-sm sm:px-3 sm:py-2 sm:text-base"
-                    onClick={() =>
-                      setQuantities((prev) => ({
-                        ...prev,
-                        [product.sku]: Math.min(
-                          product.stockQuantity,
-                          qty + 1
-                        ),
-                      }))
-                    }
-                  >
-                    ➕
-                  </Button>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      onClick={() =>
+                        setQuantities((prev) => ({
+                          ...prev,
+                          [product.sku]: Math.min(
+                            product.stockQuantity,
+                            qty + 1
+                          ),
+                        }))
+                      }
+                      disabled={isMaxReached}
+                      className="px-2 py-1 text-sm sm:px-3 sm:py-2 sm:text-base disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
+                      ➕
+                    </Button>
 
-                  <Button
-                    className="ml-50 sm:ml-5 text-sm px-4 py-2 sm:text-base"
-                    onClick={() => addToCart(product, qty)}
-                  >
-                    Agregar
-                  </Button>
+                    {isMaxReached && (
+                      <span className="text-sm text-red-600 font-medium">
+                        No hay stock
+                      </span>
+                    )}
+                  </div>
+
+
+                 <Button
+                  onClick={() => {
+                    addToCart(product, qty);
+                    setQuantities((prev) => ({
+                      ...prev,
+                      [product.sku]: 1,
+                    }));
+                  }}
+                  disabled={isMaxReached}
+                  className="ml-50 sm:ml-5 text-sm px-4 py-2 sm:text-base disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  Agregar
+                </Button>
+
+
                 </div>
               </Card>
             );

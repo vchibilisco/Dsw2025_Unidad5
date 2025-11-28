@@ -1,5 +1,5 @@
 // src/auth/modals/RegisterModal.jsx
-import Modal from "./Modal";
+import Modal from "../../shared/components/Modal";
 import RegisterForm from "../../auth/components/RegisterForm";
 
 export default function RegisterModal({ isOpen, onClose }) {
