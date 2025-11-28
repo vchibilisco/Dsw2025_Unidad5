@@ -21,7 +21,7 @@ function CartPage() {
 
   const [deleteQuantities, setDeleteQuantities] = useState({});
 
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
 
   const totalItems = cart.reduce((acc, p) => acc + p.quantity, 0);
   const totalAmount = cart.reduce(
@@ -43,12 +43,14 @@ function CartPage() {
   }, []);
 
   const sendOrder = async () => {
-  try {
-    // TODO: reemplazar cuando tengas el verdadero customerId (GUID)
-    const HARDCODED_CUSTOMER_ID = "8ee65b9a-6746-4401-a885-09a9f7c67ed4";
+ if (!user) {
+    setOpenLoginModal(true);
+    return;
+  }
 
+  try {
     const orderData = {
-      customerId: HARDCODED_CUSTOMER_ID,
+      customerId: user.customerId,
       shippingAddress: "Sin especificar",
       billingAddress: "Sin especificar",
       notes: "",
@@ -72,8 +74,7 @@ function CartPage() {
 };
 
   const handleCheckout = () => {
-  if (isAuthenticated) sendOrder();
-  else setOpenLoginModal(true);
+  sendOrder();
 };
 
   const handleLoginSuccess = () => {

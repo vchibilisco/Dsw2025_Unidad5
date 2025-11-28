@@ -8,13 +8,8 @@ const useAuth = () => {
     throw new Error('useAuth no debe ser usado por fuera de AuthProvider');
   }
 
-  return {
-    isAuthenticated: context.isAuthenticated,
-    singin: context.singin,
-    singout: context.singout,
-    register: context.register,
-  };
-
+  return context;
 };
 
 export default useAuth;
+
