@@ -15,11 +15,20 @@ function App() {
   const router = createBrowserRouter([
     {
       path: '/',
-      element: <><Header/></>,
+      element: (
+        // Layout principal para la parte pública (Cliente)
+        <>
+          <Header />
+          <main className="container mx-auto p-4">
+            {/* EL OUTLET ES CRUCIAL: Aquí se muestran el catálogo o el carrito */}
+            <Outlet />
+          </main>
+        </>
+      ),
       children: [
         {
           path: '/',
-          element: <ListProductMainPage/>,
+          element: <ListProductMainPage />,
         },
         {
           path: '/cart',
