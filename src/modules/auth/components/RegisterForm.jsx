@@ -12,30 +12,42 @@ function RegisterForm({ onSuccess, fixedRole }) {
     register,
     handleSubmit,
     formState: { errors },
-    getValues
+    getValues,
   } = useForm();
 
   const navigate = useNavigate();
   const { register: registerUser } = useAuth();
 
   const onValid = async ({ username, password, email, role }) => {
-    setErrorMessage("");
+    setErrorMessage('');
     const finalRole = fixedRole ?? role;
 
     try {
       const { error } = await registerUser(username, password, email, finalRole);
 
       if (error) {
-        setErrorMessage(error.frontendErrorMessage ?? "No se pudo completar el registro");
+        setErrorMessage(error.frontendErrorMessage ?? 'No se pudo completar el registro');
+
         return;
       }
 
       if (onSuccess) return onSuccess();
 
-      navigate("/login");
+      navigate('/login');
 
-    } catch {
-      setErrorMessage("Llame a soporte");
+    } catch (err) {
+      const backendError = err.backendError;
+
+      if (backendError) {
+        setErrorMessage(
+          backendError.frontendErrorMessage
+          || backendError.backendMessage
+          || 'Llame a soporte',
+        );
+        return;
+      }
+
+      setErrorMessage('Llame a soporte');
     }
   };
 
@@ -53,32 +65,32 @@ function RegisterForm({ onSuccess, fixedRole }) {
       "
       onSubmit={handleSubmit(onValid)}
     >
-      
+
       <Input
         label="Usuario"
-        {...register("username", { required: "Usuario es obligatorio" })}
+        {...register('username', { required: 'Usuario es obligatorio' })}
         error={errors.username?.message}
       />
 
       <Input
         label="Email"
-        {...register("email", { required: "Email es obligatorio" })}
+        {...register('email', { required: 'Email es obligatorio' })}
         error={errors.email?.message}
       />
 
       <Input
         label="Contraseña"
         type="password"
-        {...register("password", { required: "Contraseña obligatoria" })}
+        {...register('password', { required: 'Contraseña obligatoria' })}
         error={errors.password?.message}
       />
 
       <Input
         label="Confirmar Contraseña"
         type="password"
-        {...register("confirmPassword", {
-          required: "Confirmación obligatoria",
-          validate: (v) => v === getValues("password") || "Las contraseñas no coinciden"
+        {...register('confirmPassword', {
+          required: 'Confirmación obligatoria',
+          validate: (v) => v === getValues('password') || 'Las contraseñas no coinciden',
         })}
         error={errors.confirmPassword?.message}
       />
@@ -89,7 +101,7 @@ function RegisterForm({ onSuccess, fixedRole }) {
 
           <select
             className="border rounded-lg p-2 text-gray-700"
-            {...register("role", { required: "El rol es obligatorio" })}
+            {...register('role', { required: 'El rol es obligatorio' })}
           >
             <option value="Client">Cliente</option>
             <option value="Admin">Admin</option>
@@ -110,7 +122,7 @@ function RegisterForm({ onSuccess, fixedRole }) {
 
       {/*botón para volver al login */}
       {!onSuccess && (
-        <Button type="button" onClick={() => navigate("/login")}>
+        <Button type="button" onClick={() => navigate('/login')}>
           Iniciar Sesión
         </Button>
       )}

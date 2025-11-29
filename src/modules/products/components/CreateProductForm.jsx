@@ -32,13 +32,19 @@ function CreateProductForm() {
 
       navigate('/admin/products');
     } catch (error) {
-      if (error.response?.data?.detail) {
-        const errorMessage = frontendErrorMessage[error.response.data.code];
+      const backendError = error.backendError;
 
-        setErrorBackendMessage(errorMessage);
-      } else {
-        setErrorBackendMessage('Contactar a Soporte');
+      if (backendError) {
+        setErrorBackendMessage(
+          backendError.frontendErrorMessage
+          || backendError.backendMessage
+          || (backendError.code ? frontendErrorMessage[backendError.code] : null)
+          || 'Contactar a Soporte',
+        );
+        return;
       }
+
+      setErrorBackendMessage('Contactar a Soporte');
     }
   };
 

@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import Input from '../../shared/components/Input';
 import Button from '../../shared/components/Button';
 import useAuth from '../hook/useAuth';
-import { frontendErrorMessage } from '../helpers/backendError';
 
 function LoginForm({ onSuccess }) {
   const [errorMessage, setErrorMessage] = useState('');
@@ -24,6 +23,7 @@ function LoginForm({ onSuccess }) {
 
       if (error) {
         setErrorMessage(error.frontendErrorMessage);
+
         return;
       }
 
@@ -34,6 +34,18 @@ function LoginForm({ onSuccess }) {
       navigate('/admin/home');
 
     } catch (error) {
+      const backendError = error.backendError;
+
+      if (backendError) {
+        setErrorMessage(
+          backendError.frontendErrorMessage
+          || backendError.backendMessage
+          || 'Llame a soporte',
+        );
+
+        return;
+      }
+
       setErrorMessage('Llame a soporte');
     }
   };
