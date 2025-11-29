@@ -1,0 +1,176 @@
+public static class ValidationErrorCodes
+{
+    // RegisterValidator
+    public const int RegisterUsername = 2001;
+    public const int RegisterEmailEmpty = 2002;
+    public const int RegisterEmailFormat = 2003;
+    public const int RegisterPasswordLength = 2004;
+    public const int RegisterPasswordNumber = 2005;
+    public const int RegisterPasswordUpper = 2006;
+    public const int RegisterPasswordLower = 2007;
+    public const int RegisterPasswordSpecial = 2008;
+
+    // ProductValidator
+    public const int ProductSku = 3001;
+    public const int ProductInternalCode = 3002;
+    public const int ProductNameEmpty = 3003;
+    public const int ProductNameFormat = 3004;
+    public const int ProductDescriptionLength = 3005;
+    public const int ProductDescriptionFormat = 3006;
+    public const int ProductPrice = 3007;
+    public const int ProductStock = 3008;
+
+    // OrderValidator
+    public const int OrderCustomerId = 4001;
+    public const int OrderShippingAddressEmpty = 4002;
+    public const int OrderShippingAddressFormat = 4003;
+    public const int OrderShippingAddressLength = 4004;
+    public const int OrderBillingAddressEmpty = 4005;
+    public const int OrderBillingAddressFormat = 4006;
+    public const int OrderBillingAddressLength = 4007;
+    public const int OrderNotes= 4008;
+    public const int OrderItems = 4009;
+
+    // OrderItemValidator
+    public const int OrderItemProduct = 5001;
+    public const int OrderItemQuantityPositive = 5002;
+    public const int OrderItemQuantityMax = 5003;
+    public const int OrderItemQuantityWhole = 5004;
+
+    // CustomerValidator
+    public const int CustomerName = 6001;
+    public const int CustomerEmail = 6002;
+    public const int CustomerPhone = 6003;
+
+    // Roles / Authorization
+    public const int RoleInvalid = 7001;
+
+    // Identity / UserManager
+    public const int IdentityError = 8001;
+}
+------------------------------------------------------------------------------------------------------------------
+    catch (Exception e)
+    {
+        context.Response.ContentType = "application/json";
+
+        var statusCode = HttpStatusCode.InternalServerError;
+        object errors = null!;
+        string title = "Internal Server Error";
+        string detail = e.Message;
+        int internalCode = 1000;
+
+        switch (e)
+        {
+            case ValidationException ve:
+                statusCode = HttpStatusCode.BadRequest;
+                title = "Validation Failed";
+                detail = ve.Message;
+                errors = ve.Errors.Select(e => new { e.Message, e.Code });
+                internalCode = 1001;
+                break;
+
+            case EntityNotFoundException enEx:
+                statusCode = HttpStatusCode.NotFound;
+                title = "Entity Not Found";
+                detail = enEx.Message;
+                internalCode = 1002;
+                break;
+
+            case NoContentException nocEx:
+                statusCode = HttpStatusCode.NoContent;
+                title = "No Content"; 
+                detail = nocEx.Message;
+                internalCode = 1003;
+                break;
+
+            case DuplicatedEntityException duplicatedEx:
+                statusCode = HttpStatusCode.BadRequest;
+                title = "Entity Already Exists";
+                detail = duplicatedEx.Message;
+                internalCode = 1004;
+                break;
+
+            case BadRequestException badRequestEx:
+                statusCode = HttpStatusCode.BadRequest;
+                title = "Bad Request";
+                detail = badRequestEx.Message;
+                internalCode = 1005;
+                break;
+
+            case ArgumentException argEx:
+                statusCode = HttpStatusCode.BadRequest;
+                title = "Invalid Argument";
+                detail = argEx.Message;
+                internalCode = 1006;
+                break;
+
+            case InvalidOperationException inEx:
+                statusCode = HttpStatusCode.BadRequest;
+                title = "Invalid Operation";
+                detail = inEx.Message;
+                internalCode = 1007;
+                break;
+
+            case UnauthorizedException unEx:
+                statusCode = HttpStatusCode.Unauthorized;
+                title = "Unauthorized Access";
+                detail = unEx.Message;
+                internalCode = 1008;
+                break;
+
+            case PreconditionException prEx:
+                statusCode = HttpStatusCode.PreconditionFailed;
+                title = "Precondition Failed";
+                detail = prEx.Message;
+                internalCode = 1009;
+                break;
+
+            case ApplicationException appEx:
+                statusCode = HttpStatusCode.BadRequest;
+                title = "Application Error";
+                detail = appEx.Message;
+                internalCode = 1010;
+                break;
+        }
+
+        var errorResponse = errors != null
+        ? (object)new { status = (int)statusCode, title = title, detail = detail, errors = errors, code = internalCode }
+        : new { status = (int)statusCode, title = title, detail = detail, code = internalCode };
+
+        //var errorResponse = new
+        //{
+        //    status = (int)statusCode,
+        //    title = title,
+        //    detail = detail,
+        //    errors = errors
+        //};
+
+        context.Response.StatusCode = (int)statusCode;
+
+        var json = JsonSerializer.Serialize(errorResponse);
+        await context.Response.WriteAsync(json);
+    }
+}
+---------------------------------------------------------
+ public class ValidationError
+ {
+     public string Message { get; set; } = string.Empty;
+     public int Code { get; set; }
+
+     public ValidationError(string message, int code)
+     {
+         Message = message;
+         Code = code;
+     }
+ }
+
+ public class ValidationException : Exception
+ {
+     public List<ValidationError> Errors { get; }
+
+     public ValidationException(string message, List<ValidationError> errors)
+         : base(message)
+     {
+         Errors = errors ?? new List<ValidationError>();
+     }
+ }

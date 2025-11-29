@@ -1,35 +1,16 @@
+import { instance } from '../../shared/api/axiosInstance';
+import { mapBackendError } from '../../shared/helpers/mapBackendError';
 import { frontendErrorMessage } from '../helpers/backendError';
 
 export const register = async (username, password, email, role) => {
-  const response = await fetch('/api/auth/register', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ username, password, email, role }),
-  });
-
-  if (!response.ok) {
-    const errorData = await response.json();
-
-    return {
-      data: null,
-      error: {
-        ...errorData,
-        frontendErrorMessage: frontendErrorMessage[errorData.code],
-      },
-    };
-  }
-
-  let data = null;
-
   try {
-    const rawBody = await response.text();
+    const response = await instance.post('api/auth/register', { username, password, email, role });
 
-    data = rawBody ? JSON.parse(rawBody) : null;
-  } catch {
-    data = null;
+    return { data: response.data, error: null };
+  } catch (err) {
+    // Siempre remapeamos con los mensajes del front para priorizarlos
+    const mappedError = mapBackendError(err, frontendErrorMessage);
+
+    return { data: null, error: mappedError };
   }
-
-  return { data, error: null };
 };

@@ -4,9 +4,11 @@ import { useNavigate } from 'react-router-dom';
 import Input from '../../shared/components/Input';
 import Button from '../../shared/components/Button';
 import useAuth from '../hook/useAuth';
+import { frontendErrorMessage } from '../helpers/backendError';
 
 function RegisterForm({ onSuccess, fixedRole }) {
   const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessages, setErrorMessages] = useState([]);
 
   const {
     register,
@@ -20,13 +22,24 @@ function RegisterForm({ onSuccess, fixedRole }) {
 
   const onValid = async ({ username, password, email, role }) => {
     setErrorMessage('');
+    setErrorMessages([]);
     const finalRole = fixedRole ?? role;
 
     try {
       const { error } = await registerUser(username, password, email, finalRole);
 
       if (error) {
-        setErrorMessage(error.frontendErrorMessage ?? 'No se pudo completar el registro');
+        const detailedMessages = (error.errors || [])
+          .map((err) => frontendErrorMessage[err.code] || err.message)
+          .filter(Boolean);
+
+        setErrorMessages(detailedMessages);
+        setErrorMessage(
+          error.frontendErrorMessage
+          || detailedMessages[0]
+          || error.backendMessage
+          || 'No se pudo completar el registro',
+        );
 
         return;
       }
@@ -39,8 +52,14 @@ function RegisterForm({ onSuccess, fixedRole }) {
       const backendError = err.backendError;
 
       if (backendError) {
+        const detailedMessages = (backendError.errors || [])
+          .map((e) => frontendErrorMessage[e.code] || e.message)
+          .filter(Boolean);
+
+        setErrorMessages(detailedMessages);
         setErrorMessage(
           backendError.frontendErrorMessage
+          || detailedMessages[0]
           || backendError.backendMessage
           || 'Llame a soporte',
         );
@@ -115,6 +134,13 @@ function RegisterForm({ onSuccess, fixedRole }) {
 
       {errorMessage && (
         <p className="text-red-500 text-center text-sm">{errorMessage}</p>
+      )}
+      {errorMessages.length > 0 && (
+        <ul className="text-red-500 text-sm list-disc list-inside space-y-1">
+          {errorMessages.map((msg, idx) => (
+            <li key={idx}>{msg}</li>
+          ))}
+        </ul>
       )}
 
       {/* Botón principal */}

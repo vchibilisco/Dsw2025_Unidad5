@@ -39,13 +39,23 @@ const mapBackendError = (errorLike, frontendMessages = {}, fallbackMessage = DEF
   const detail = buildDetail(raw.detail, raw.title, errors);
 
   const backendMessage = detail || fallbackMessage;
+  const hasSpecificErrors = errors.length > 0;
+
+  // Mensaje preferido: solo usamos el mapeo general cuando no hay errores detallados.
+  let frontendMessage = (code && frontendMessages[code]) || null;
+
+  // Caso especial: el backend devuelve 1001 pero trae errores con codigos especificos (2000s, etc.)
+  // No mostrar el mensaje generico 1001 si tenemos errores puntuales.
+  if (code === 1001 && hasSpecificErrors) {
+    frontendMessage = null;
+  }
 
   return {
     ...raw,
     code,
     errors,
     backendMessage,
-    frontendErrorMessage: (code && frontendMessages[code]) || null,
+    frontendErrorMessage: frontendMessage,
   };
 };
 

@@ -1,6 +1,6 @@
 // src/auth/modals/LoginModal.jsx
-import Modal from "../../shared/components/Modal";
-import LoginForm from "../../auth/components/LoginForm";
+import Modal from '../../shared/components/Modal';
+import LoginForm from '../../auth/components/LoginForm';
 
 export default function LoginModal({ isOpen, onClose }) {
   return (
@@ -17,7 +17,7 @@ export default function LoginModal({ isOpen, onClose }) {
           className="text-blue-600 ml-1"
           onClick={() => {
             onClose();            // cerramos login
-            window.dispatchEvent(new Event("open-register")); // abrimos register
+            window.dispatchEvent(new Event('open-register')); // abrimos register
           }}
         >
           Regístrate

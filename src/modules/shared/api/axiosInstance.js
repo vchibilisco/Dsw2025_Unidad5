@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { mapBackendError } from '../helpers/mapBackendError';
 
 const instance = axios.create({
   baseURL: import.meta.env.VITE_BACKEND_URL,
@@ -19,9 +20,11 @@ instance.interceptors.request.use(
 );
 
 instance.interceptors.response.use(
-  (config) => { return config; },
+  (config) => config,
   (error) => {
-    if (error.status === 401) {
+    const statusCode = error.response?.status ?? error.status;
+
+    if (statusCode === 401) {
       if (window.location.pathname.includes('/admin/')) {
         localStorage.clear();
         window.location.href = '/login';
@@ -29,6 +32,8 @@ instance.interceptors.response.use(
         localStorage.removeItem('token');
       }
     }
+
+    error.backendError = mapBackendError(error);
 
     return Promise.reject(error);
   },

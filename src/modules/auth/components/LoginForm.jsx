@@ -4,9 +4,11 @@ import { useNavigate } from 'react-router-dom';
 import Input from '../../shared/components/Input';
 import Button from '../../shared/components/Button';
 import useAuth from '../hook/useAuth';
+import { frontendErrorMessage } from '../helpers/backendError';
 
 function LoginForm({ onSuccess }) {
   const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessages, setErrorMessages] = useState([]);
 
   const {
     register,
@@ -22,7 +24,17 @@ function LoginForm({ onSuccess }) {
       const { error } = await singin(formData.username, formData.password);
 
       if (error) {
-        setErrorMessage(error.frontendErrorMessage);
+        const detailedMessages = (error.errors || [])
+          .map((err) => frontendErrorMessage[err.code] || err.message)
+          .filter(Boolean);
+
+        setErrorMessages(detailedMessages);
+        setErrorMessage(
+          error.frontendErrorMessage
+          || detailedMessages[0]
+          || error.backendMessage
+          || 'Llame a soporte',
+        );
 
         return;
       }
@@ -37,8 +49,14 @@ function LoginForm({ onSuccess }) {
       const backendError = error.backendError;
 
       if (backendError) {
+        const detailedMessages = (backendError.errors || [])
+          .map((e) => frontendErrorMessage[e.code] || e.message)
+          .filter(Boolean);
+
+        setErrorMessages(detailedMessages);
         setErrorMessage(
           backendError.frontendErrorMessage
+          || detailedMessages[0]
           || backendError.backendMessage
           || 'Llame a soporte',
         );
@@ -97,6 +115,13 @@ function LoginForm({ onSuccess }) {
 
       {errorMessage && (
         <p className="text-red-500 text-sm text-center">{errorMessage}</p>
+      )}
+      {errorMessages.length > 0 && (
+        <ul className="text-red-500 text-sm list-disc list-inside space-y-1">
+          {errorMessages.map((msg, idx) => (
+            <li key={idx}>{msg}</li>
+          ))}
+        </ul>
       )}
     </form>
   );

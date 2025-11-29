@@ -1,6 +1,6 @@
 // src/auth/modals/RegisterModal.jsx
-import Modal from "../../shared/components/Modal";
-import RegisterForm from "../../auth/components/RegisterForm";
+import Modal from '../../shared/components/Modal';
+import RegisterForm from '../../auth/components/RegisterForm';
 
 export default function RegisterModal({ isOpen, onClose }) {
   return (
@@ -18,7 +18,7 @@ export default function RegisterModal({ isOpen, onClose }) {
           className="text-blue-600 ml-1"
           onClick={() => {
             onClose();
-            window.dispatchEvent(new Event("open-login"));
+            window.dispatchEvent(new Event('open-login'));
           }}
         >
           Inicia sesión
