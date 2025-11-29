@@ -45,8 +45,8 @@ function ShoppingCart() {
 
         // 1. APLICAR LÍMITE SUPERIOR (STOCK)
         if (delta > 0) {
-            // No permitir que la cantidad supere el stock
-            newQuantity = Math.min(availableStock, newQuantity);
+          // No permitir que la cantidad supere el stock
+          newQuantity = Math.min(availableStock, newQuantity);
         }
 
         // 2. APLICAR LÍMITE INFERIOR (CERO)

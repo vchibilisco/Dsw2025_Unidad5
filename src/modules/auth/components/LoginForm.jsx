@@ -23,7 +23,7 @@ function LoginForm() {
   useEffect(() => {
     if (location.state?.authError) {
       setErrorMessage(location.state.authError);
-      
+
       // Limpiamos el estado después de leerlo (opcional, pero buena práctica)
       navigate(location.pathname, { replace: true, state: {} });
     }
@@ -39,12 +39,14 @@ function LoginForm() {
 
         return;
       }
+
       const userRole = data?.role || localStorage.getItem('role');
-      if (userRole === 'Admin'){
+
+      if (userRole === 'Admin') {
         navigate('/admin/home');
-      } else{
+      } else {
         setErrorMessage('Tu cuenta no tiene autorización para acceder al panel de administración.');
-        
+
         // Limpiamos la sesión inmediatamente para evitar que quede logueado
         signout();
       }

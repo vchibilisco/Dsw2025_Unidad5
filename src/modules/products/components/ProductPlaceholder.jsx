@@ -5,7 +5,6 @@ function ProductPlaceholder({ product, onQuantityChange, onDelete }) {
   const { stockQuantity, quantity } = product;
   const subtotal = unitPrice * quantity;
   const isDisabled = quantity >= stockQuantity;
-  
 
   return (
     <Card className='w-full shadow-sm text-sm sm:text-base p-5 space-y-3'>
@@ -29,10 +28,7 @@ function ProductPlaceholder({ product, onQuantityChange, onDelete }) {
         <button
           onClick={() => onQuantityChange(product.sku, 1)}
           className={`px-3 py-1 rounded transition 
-            ${isDisabled 
-              ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-              : 'bg-gray-200 hover:bg-gray-300'
-            }`}
+            ${isDisabled ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-gray-200 hover:bg-gray-300'}`}
           disabled={isDisabled}
         >
           +

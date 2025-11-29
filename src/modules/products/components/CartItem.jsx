@@ -19,7 +19,7 @@ const CartItem = ({ product }) => {
     return null;
   }
 
-  const { name, currentUnitPrice, stockQuantity} = product;
+  const { name, currentUnitPrice, stockQuantity } = product;
 
   const handleQuantityChange = (delta) => {
     setQuantity((prev) => {
@@ -74,9 +74,7 @@ const CartItem = ({ product }) => {
             <button
               onClick={() => handleQuantityChange(1)}
               className={`px-2 py-1 text-lg rounded transition 
-                ${quantity >= stockQuantity 
-                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
-                  : 'bg-gray-200 hover:bg-gray-300'}`}
+                ${quantity >= stockQuantity ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-gray-200 hover:bg-gray-300'}`}
               disabled={quantity >= stockQuantity}
             >
               +
@@ -84,9 +82,7 @@ const CartItem = ({ product }) => {
             <button
               onClick={handleAdd}
               className={`transition px-2 py-1 rounded text-sm
-                ${quantity === 0
-                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                  : 'bg-purple-200 hover:bg-purple-300'}`}
+                ${quantity === 0 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-purple-200 hover:bg-purple-300'}`}
             >
               Agregar
             </button>

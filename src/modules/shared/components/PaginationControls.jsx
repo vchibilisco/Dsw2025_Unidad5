@@ -6,7 +6,7 @@ function PaginationControls({
   pageSize,
   setPageNumber,
   setPageSize,
-  availableSizes = ["2", "10", "15", "20"] // Tamaños por defecto
+  availableSizes = ['2', '10', '15', '20'],
 }) {
   const handlePageSizeChange = (evt) => {
     // Cuando cambia el tamaño de página, siempre volvemos a la página 1.

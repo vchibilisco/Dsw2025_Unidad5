@@ -9,9 +9,9 @@ function ProtectedRoute({ children }) {
   }
 
   if (role !== 'Admin') {
-   return <Navigate 
-      to='/login' 
-      state={{ authError: 'No tienes permisos para acceder a esta sección.' }} 
+    return <Navigate
+      to='/login'
+      state={{ authError: 'No tienes permisos para acceder a esta sección.' }}
     />;
   }
 

@@ -65,42 +65,9 @@ function ListOrdersPage() {
 
   const totalPages = Math.ceil(total / pageSize);
 
-  const getVisiblePages = () => {
-    const pages = [];
-
-    if (totalPages <= 3) {
-      // Mostrar todas si son 3 o menos
-      for (let i = 1; i <= totalPages; i++) pages.push(i);
-    } else if (totalPages === 4) {
-      if (pageNumber <= 2) {
-        pages.push(1, 2, '…', 4);
-      } else {
-        pages.push(2, 3, 4);
-      }
-    } else {
-      if (pageNumber <= 2) {
-        pages.push(1, 2, '…', totalPages);
-      } else if (pageNumber >= totalPages - 1) {
-        pages.push(1, '…', totalPages - 1, totalPages);
-      } else {
-        pages.push(pageNumber - 1, pageNumber, pageNumber + 1);
-      }
-    }
-
-    return pages;
-  };
-
-  const visiblePages = getVisiblePages();
-
   const handleSearch = async () => {
     setPageNumber(1);
     await fetchOrders();
-  };
-
-  const handlePageSizeChange = (evt) => {
-    // 3. Implementación de lógica: Reiniciar la página a 1 y establecer el nuevo tamaño
-    setPageNumber(1);
-    setPageSize(Number(evt.target.value));
   };
 
   return (

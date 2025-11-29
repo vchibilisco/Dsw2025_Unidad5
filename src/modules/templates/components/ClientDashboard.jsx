@@ -42,7 +42,7 @@ export default function ClientDashboard() {
       }
 
       // 2. Si no ha alcanzado el límite, suma 1
-      cart[index].quantity += 1; 
+      cart[index].quantity += 1;
 
     } else {
       // El producto NO está en el carrito
@@ -52,6 +52,7 @@ export default function ClientDashboard() {
         return;
       }
       // 3. Añadir con cantidad 1
+
       cart.push({ ...product, quantity: 1 });
     }
 
@@ -117,6 +118,7 @@ export default function ClientDashboard() {
   const cartMap = JSON.parse(localStorage.getItem('cart') || '[]')
     .reduce((map, item) => {
       map[item.id] = item.quantity;
+
       return map;
     }, {});
 
@@ -133,10 +135,7 @@ export default function ClientDashboard() {
         <button
           disabled={isDisabled}
           className={`transition rounded text-xs px-2 py-1 
-            ${isDisabled 
-              ? 'bg-gray-300 text-gray-600 cursor-not-allowed' 
-              : 'bg-purple-200 hover:bg-purple-300'
-            }`}
+          ${isDisabled ? 'bg-gray-300 text-gray-600 cursor-not-allowed' : 'bg-purple-200 hover:bg-purple-300'}`}
           onClick={() => addToCart(product)}
         >
           {isDisabled ? 'Sin Stock' : 'Agregar'}

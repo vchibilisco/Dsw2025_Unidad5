@@ -8,6 +8,7 @@ export const getCart = () => {
     return raw ? JSON.parse(raw) : [];
   } catch (error) {
     //'Error parsing cart from localStorage:', error
+    console.warn(error);
 
     return [];
   }
