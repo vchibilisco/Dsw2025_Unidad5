@@ -10,10 +10,12 @@ function Home() {
   useEffect(() => {
     const fetchTotals = async () => {
       try {
-        const { data: prodData } = await getProducts("","", 1, 1);
+        const { data: prodData } = await getProducts('', '', 1, 1);
+
         if (prodData) setTotalProducts(prodData.total);
 
-        const { data: orderData } = await getOrders("", "", 1, 20);
+        const { data: orderData } = await getOrders('', '', 1, 20);
+
         if (orderData) setTotalOrders(orderData.totalCount);
 
       } catch (err) {

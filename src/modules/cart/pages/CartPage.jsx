@@ -1,22 +1,22 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 // Hooks
-import useAuth from "../../auth/hook/useAuth";
-import { useCart } from "../hooks/useCart";
-import { useDeleteQuantity } from "../../shared/hooks/useDeleteQuantity";
-import { useToggleMap } from "../../shared/hooks/useToggleMap";
+import useAuth from '../../auth/hook/useAuth';
+import { useCart } from '../hooks/useCart';
+import { useDeleteQuantity } from '../../shared/hooks/useDeleteQuantity';
+import { useToggleMap } from '../../shared/hooks/useToggleMap';
 
 // Components
-import Button from "../../shared/components/Button";
-import Card from "../../shared/components/Card";
-import UserHeaderMenu from "../../shared/components/UserHeaderMenu";
-import MobileSideMenu from "../../shared/components/MobileSideMenu";
-import LoginModal from "../../auth/components/LoginModal";
-import RegisterModal from "../../auth/components/RegisterModal";
+import Button from '../../shared/components/Button';
+import Card from '../../shared/components/Card';
+import UserHeaderMenu from '../../shared/components/UserHeaderMenu';
+import MobileSideMenu from '../../shared/components/MobileSideMenu';
+import LoginModal from '../../auth/components/LoginModal';
+import RegisterModal from '../../auth/components/RegisterModal';
 
 // Services
-import { createOrder } from "../../orders/services/createOrder";
+import { createOrder } from '../../orders/services/createOrder';
 
 function CartPage() {
   const navigate = useNavigate();
@@ -26,43 +26,44 @@ function CartPage() {
   const { deleteQuantities, get, increment, decrement, reset } = useDeleteQuantity();
 
   const {
-      state: modals,
-      open,
-      close,
-    } = useToggleMap({
-      cartMenu: false,
-      loginModal: false,
-      registerModal: false,
-    });
+    state: modals,
+    open,
+    close,
+  } = useToggleMap({
+    cartMenu: false,
+    loginModal: false,
+    registerModal: false,
+  });
 
   const totalItems = cart.reduce((acc, p) => acc + p.quantity, 0);
   const totalAmount = cart.reduce((acc, p) => acc + p.quantity * p.currentUnitPrice, 0);
 
   useEffect(() => {
-    const openLogin = () => open("loginModal");
-    const openRegister = () => open("registerModal");
+    const openLogin = () => open('loginModal');
+    const openRegister = () => open('registerModal');
 
-    window.addEventListener("open-login", openLogin);
-    window.addEventListener("open-register", openRegister);
+    window.addEventListener('open-login', openLogin);
+    window.addEventListener('open-register', openRegister);
 
     return () => {
-      window.removeEventListener("open-login", openLogin);
-      window.removeEventListener("open-register", openRegister);
+      window.removeEventListener('open-login', openLogin);
+      window.removeEventListener('open-register', openRegister);
     };
   }, []);
 
   const sendOrder = async () => {
     if (!user) {
-      open("loginModal");
+      open('loginModal');
+
       return;
     }
 
     try {
       const orderData = {
         customerId: user.customerId,
-        shippingAddress: "Sin especificar",
-        billingAddress: "Sin especificar",
-        notes: "",
+        shippingAddress: 'Sin especificar',
+        billingAddress: 'Sin especificar',
+        notes: '',
         orderItems: cart.map((item) => ({
           productId: item.productId,
           quantity: item.quantity,
@@ -70,20 +71,21 @@ function CartPage() {
       };
 
       const { data, error } = await createOrder(orderData);
+
       if (error) throw error;
 
       clearCart();
-      navigate("/");
+      navigate('/');
     } catch (err) {
       console.error(err);
-      alert("Error al procesar la orden.");
+      alert('Error al procesar la orden.');
     }
   };
 
   const handleCheckout = () => sendOrder();
 
   const handleLoginSuccess = () => {
-    close("loginModal");
+    close('loginModal');
     sendOrder();
   };
 
@@ -99,7 +101,7 @@ function CartPage() {
             src="https://cdn-icons-png.flaticon.com/512/2038/2038854.png"
             className="w-32 mx-auto opacity-80 mb-6"
           />
-          <Button className="w-full text-lg py-2" onClick={() => navigate("/")}>
+          <Button className="w-full text-lg py-2" onClick={() => navigate('/')}>
             Ver productos
           </Button>
         </Card>
@@ -113,12 +115,12 @@ function CartPage() {
       <Card>
         <UserHeaderMenu
           title="Carrito"
-          search={{ value: "", onChange: () => {}, onSearch: () => {} }}
-          onGoProducts={() => navigate("/")}
+          search={{ value: '', onChange: () => {}, onSearch: () => {} }}
+          onGoProducts={() => navigate('/')}
           onGoCart={null}
-          onOpenLogin={() => open("loginModal")}
-          onOpenRegister={() => open("registerModal")}
-          onOpenMobileMenu={() => open("cartMenu")}
+          onOpenLogin={() => open('loginModal')}
+          onOpenRegister={() => open('registerModal')}
+          onOpenMobileMenu={() => open('cartMenu')}
           totalItems={totalItems}
         />
       </Card>
@@ -127,20 +129,20 @@ function CartPage() {
       <MobileSideMenu
         isOpen={modals.cartMenu}
         title="Menú"
-        onClose={() => close("cartMenu")}
+        onClose={() => close('cartMenu')}
         onGoProducts={() => {
-          close("cartMenu");
-          navigate("/");
+          close('cartMenu');
+          navigate('/');
         }}
         onGoCart={null}
         totalItems={totalItems}
         onOpenLogin={() => {
-          close("cartMenu");
-          open("loginModal");
+          close('cartMenu');
+          open('loginModal');
         }}
         onOpenRegister={() => {
-          close("cartMenu");
-          open("registerModal");
+          close('cartMenu');
+          open('registerModal');
         }}
       />
 
@@ -158,17 +160,17 @@ function CartPage() {
                 <p className="text-gray-600 mt-1 text-sm sm:text-base">
                   Cantidad actual: <strong>{item.quantity}</strong>
                 </p>
- 
-                    {delQty >= item.quantity && (
-                      <p className="text-red-600 p-1 text-sm font-medium">
+
+                {delQty >= item.quantity && (
+                  <p className="text-red-600 p-1 text-sm font-medium">
                         Si borra, este producto se eliminará del carrito
-                      </p>
-                    )}
+                  </p>
+                )}
 
                 <div className="flex justify-between items-center mt-4">
                   <div className="flex items-center gap-4">
                     <Button
-                     onClick={() => decrement(item.sku)}
+                      onClick={() => decrement(item.sku)}
                       disabled={delQty <= 1}
                       className="px-2 py-1 text-sm sm:px-3 sm:py-2 sm:text-base disabled:opacity-40 disabled:cursor-not-allowed"
                     >
@@ -191,6 +193,7 @@ function CartPage() {
                     onClick={() => {
                       if (delQty >= item.quantity) removeFromCart(item.sku);
                       else updateQuantity(item.sku, item.quantity - delQty);
+
                       reset(item.sku);
                     }}
                   >
@@ -224,16 +227,15 @@ function CartPage() {
       {/* Modals */}
       <LoginModal
         isOpen={modals.loginModal}
-        onClose={() => close("loginModal")}
+        onClose={() => close('loginModal')}
         onSuccess={handleLoginSuccess}
       />
       <RegisterModal
         isOpen={modals.registerModal}
-        onClose={() => close("registerModal")}
+        onClose={() => close('registerModal')}
       />
     </div>
   );
 }
 
 export default CartPage;
-

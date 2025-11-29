@@ -63,6 +63,7 @@ function RegisterForm({ onSuccess, fixedRole }) {
           || backendError.backendMessage
           || 'Llame a soporte',
         );
+
         return;
       }
 
