@@ -39,7 +39,18 @@ function ShoppingCart() {
       .map((item) => {
         if (item.sku !== sku) return item;
 
-        const newQuantity = Math.max(0, item.quantity + delta);
+        // OBTENER STOCK DISPONIBLE
+        const availableStock = item.stockQuantity;
+        let newQuantity = item.quantity + delta;
+
+        // 1. APLICAR LÍMITE SUPERIOR (STOCK)
+        if (delta > 0) {
+            // No permitir que la cantidad supere el stock
+            newQuantity = Math.min(availableStock, newQuantity);
+        }
+
+        // 2. APLICAR LÍMITE INFERIOR (CERO)
+        newQuantity = Math.max(0, newQuantity);
 
         if (newQuantity === 0) {
           removeFromCart(sku);

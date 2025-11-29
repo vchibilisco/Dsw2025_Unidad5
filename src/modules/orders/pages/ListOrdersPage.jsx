@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import Button from '../../shared/components/Button';
 import Card from '../../shared/components/Card';
 import { getOrdersWithCustomerName } from '../services/listServices';
+import PaginationControls from '../../shared/components/PaginationControls';
 
 const orderStatus = {
   ALL: 'ALL',
@@ -167,49 +168,14 @@ function ListOrdersPage() {
         )}
       </div>
 
-      <div className='flex justify-center items-center gap-2 mt-6'>
-        <button
-          disabled={pageNumber === 1}
-          onClick={() => setPageNumber(pageNumber - 1)}
-          className='px-1 py-2 text-xs sm:text-sm bg-gray-200 disabled:bg-gray-100 rounded-md w-full max-w-[140px]'
-        >
-          ← Previous
-        </button>
-
-        <div className='hidden md:flex gap-2'>
-          {visiblePages.map((page, idx) =>
-            typeof page === 'number' ? (
-              <button
-                key={idx}
-                onClick={() => setPageNumber(page)}
-                className={`px-3 py-1 ${pageNumber === page ? 'bg-black text-white' : 'bg-gray-200'}`}
-              >
-                {page}
-              </button>
-            ) : (
-              <span key={idx} className='px-3 py-1'>…</span>
-            ),
-          )}
-        </div>
-
-        <button
-          disabled={pageNumber === totalPages}
-          onClick={() => setPageNumber(pageNumber + 1)}
-          className='px-1 py-2 text-xs sm:text-sm bg-gray-200 disabled:bg-gray-100 rounded-md w-full max-w-[140px]'
-        >
-          Next →
-        </button>
-        <select
-          value={pageSize}
-          onChange={handlePageSizeChange}
-          className='ml-3 text-xs sm:text-base border px-2 py-2 rounded-md'
-        >
-          <option value="3">3</option>
-          <option value="5">5</option>
-          <option value="10">10</option>
-          <option value="15">15</option>
-        </select>
-      </div>
+      <PaginationControls
+        pageNumber={pageNumber}
+        totalPages={totalPages}
+        pageSize={pageSize}
+        setPageNumber={setPageNumber}
+        setPageSize={setPageSize}
+        availableSizes={['3', '5', '10', '15', '20']}
+      />
       {selectedOrder && (
         <div className='fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-50'>
           <div className='bg-white p-6 rounded-lg shadow-lg w-full max-w-sm sm:max-w-md mx-4 max-h-[90vh] flex flex-col'>

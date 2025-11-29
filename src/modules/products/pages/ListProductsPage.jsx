@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Button from '../../shared/components/Button';
 import Card from '../../shared/components/Card';
 import { getProducts } from '../services/list';
+import PaginationControls from '../../shared/components/PaginationControls';
 
 const productStatus = {
   ALL: 'all',
@@ -101,37 +102,12 @@ function ListProductsPage() {
         }
       </div>
 
-      <div className='flex justify-center items-center mt-3'>
-        <button
-          disabled={pageNumber === 1}
-          onClick={() => setPageNumber(pageNumber - 1)}
-          className='bg-gray-200 disabled:bg-gray-100 text-base'
-        >
-          Atras
-        </button>
-        <span className='text-base'>{pageNumber} / {totalPages}</span>
-        <button
-          disabled={ pageNumber === totalPages }
-          onClick={() => setPageNumber(pageNumber + 1)}
-          className='bg-gray-200 disabled:bg-gray-100 text-base'
-        >
-          Siguiente
-        </button>
-
-        <select
-          value={pageSize}
-          onChange={evt => {
-            setPageNumber(1);
-            setPageSize(Number(evt.target.value));
-          }}
-          className='ml-3 text-base'
-        >
-          <option value="2">2</option>
-          <option value="10">10</option>
-          <option value="15">15</option>
-          <option value="20">20</option>
-        </select>
-      </div>
+      <PaginationControls
+        pageNumber={pageNumber}
+        totalPages={totalPages}
+        pageSize={pageSize}
+        setPageNumber={setPageNumber}
+        setPageSize={setPageSize} />
     </div>
 
   );

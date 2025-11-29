@@ -28,12 +28,31 @@ export default function ClientDashboard() {
   const addToCart = (product) => {
     const cart = JSON.parse(localStorage.getItem('cart') || '[]');
 
+    const { stockQuantity } = product;
     const index = cart.findIndex((p) => p.id === product.id);
 
     if (index >= 0) {
-      cart[index].quantity += 1; // si ya existe, suma cantidad
+      // El producto ya está en el carrito
+      const currentQuantity = cart[index].quantity;
+
+      if (currentQuantity >= stockQuantity) {
+        // 1. Evitar añadir si ya está al máximo de stock
+
+        return; // Detiene la función sin modificar el carrito
+      }
+
+      // 2. Si no ha alcanzado el límite, suma 1
+      cart[index].quantity += 1; 
+
     } else {
-      cart.push({ ...product, quantity: 1 }); // si no existe lo agrega
+      // El producto NO está en el carrito
+      if (stockQuantity <= 0) {
+        // Evitar añadir si el stock es cero o negativo
+
+        return;
+      }
+      // 3. Añadir con cantidad 1
+      cart.push({ ...product, quantity: 1 });
     }
 
     localStorage.setItem('cart', JSON.stringify(cart));
@@ -95,6 +114,37 @@ export default function ClientDashboard() {
     }
   }, [isAuthenticated, navigate]);
 
+  const cartMap = JSON.parse(localStorage.getItem('cart') || '[]')
+    .reduce((map, item) => {
+      map[item.id] = item.quantity;
+      return map;
+    }, {});
+
+  const renderSearchResultItem = (product) => {
+    const currentCartQuantity = cartMap[product.id] || 0;
+    const isDisabled = currentCartQuantity >= product.stockQuantity;
+
+    return (
+      <div
+        key={product.id}
+        className="flex justify-between items-center p-2 hover:bg-gray-100 text-sm"
+      >
+        <span>{product.name}</span>
+        <button
+          disabled={isDisabled}
+          className={`transition rounded text-xs px-2 py-1 
+            ${isDisabled 
+              ? 'bg-gray-300 text-gray-600 cursor-not-allowed' 
+              : 'bg-purple-200 hover:bg-purple-300'
+            }`}
+          onClick={() => addToCart(product)}
+        >
+          {isDisabled ? 'Sin Stock' : 'Agregar'}
+        </button>
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen grid grid-rows-[auto_1fr] bg-gray-50">
       {/* Header */}
@@ -153,21 +203,7 @@ export default function ClientDashboard() {
                 ) : searchResults.length === 0 ? (
                   <div className="p-2 text-gray-500 text-sm">No se encontraron productos</div>
                 ) : (
-                  searchResults.map((product) => (
-                    <div
-                      key={product.id}
-                      className="flex justify-between items-center p-2 hover:bg-gray-100 text-sm"
-                    >
-                      <span>{product.name}</span>
-                      <button
-                        className="bg-purple-200 hover:bg-purple-300 transition rounded text-xs"
-                        onClick={() => addToCart(product)}
-                      >
-                        Agregar
-                      </button>
-                    </div>
-
-                  ))
+                  searchResults.map(renderSearchResultItem)
                 )}
               </div>
             )}

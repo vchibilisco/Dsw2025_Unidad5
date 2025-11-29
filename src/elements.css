@@ -1,5 +1,5 @@
 @import "tailwindcss";
-
+/* stylelint-disable-next-line at-rule-no-unknown */
 @layer base {
   button {
     @apply p-1 cursor-pointer rounded-md shadow overflow-hidden;

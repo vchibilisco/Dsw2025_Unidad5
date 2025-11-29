@@ -6,20 +6,35 @@ const CartItem = ({ product }) => {
   const [quantity, setQuantity] = useState(0);
 
   const handleAdd = () => {
-    addToCart(product, quantity);
-    setQuantity(0);
+
+    if (quantity > 0) {
+      addToCart(product, quantity);
+      setQuantity(0);
+    }
   };
 
   if (!product || typeof product !== 'object') {
-    console.warn('CartItem recibió un producto inválido:', product);
+    //'CartItem recibió un producto inválido
 
     return null;
   }
 
-  const { name, currentUnitPrice } = product;
+  const { name, currentUnitPrice, stockQuantity} = product;
 
   const handleQuantityChange = (delta) => {
-    setQuantity((prev) => Math.max(0, prev + delta));
+    setQuantity((prev) => {
+      const newQuantity = prev + delta;
+
+      if (delta > 0) {
+        // Lógica de restricción para AUMENTAR:
+        // La nueva cantidad será el valor más bajo entre el stock y la nueva cantidad deseada.
+        return Math.min(stockQuantity, newQuantity);
+      } else {
+        // Lógica de restricción para DISMINUIR:
+        // La nueva cantidad debe ser como mínimo 0.
+        return Math.max(0, newQuantity);
+      }
+    });
   };
 
   return (
@@ -58,13 +73,20 @@ const CartItem = ({ product }) => {
             <span className="min-w-[20px] text-center">{quantity}</span>
             <button
               onClick={() => handleQuantityChange(1)}
-              className="px-2 py-1 text-lg bg-gray-200 rounded hover:bg-gray-300 "
+              className={`px-2 py-1 text-lg rounded transition 
+                ${quantity >= stockQuantity 
+                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                  : 'bg-gray-200 hover:bg-gray-300'}`}
+              disabled={quantity >= stockQuantity}
             >
               +
             </button>
             <button
               onClick={handleAdd}
-              className="bg-purple-200 hover:bg-purple-300 transition px-2 py-1 rounded text-sm"
+              className={`transition px-2 py-1 rounded text-sm
+                ${quantity === 0
+                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                  : 'bg-purple-200 hover:bg-purple-300'}`}
             >
               Agregar
             </button>

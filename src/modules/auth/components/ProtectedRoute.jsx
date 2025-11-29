@@ -8,10 +8,11 @@ function ProtectedRoute({ children }) {
     return <Navigate to='/login' />;
   }
 
-  if (role === 'Customer') {
-    alert('No tienes permisos para acceder a esta sección');
-
-    return <Navigate to='/' />;
+  if (role !== 'Admin') {
+   return <Navigate 
+      to='/login' 
+      state={{ authError: 'No tienes permisos para acceder a esta sección.' }} 
+    />;
   }
 
   return children;

@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import Input from '../../shared/components/Input';
 import Button from '../../shared/components/Button';
 import useAuth from '../hook/useAuth';
 import { frontendErrorMessage } from '../helpers/backendError';
+import { useLocation } from 'react-router-dom';
 
 function LoginForm() {
   const [errorMessage, setErrorMessage] = useState('');
@@ -15,20 +16,38 @@ function LoginForm() {
   } = useForm({ defaultValues: { username: '', password: '' } });
 
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const { signin } = useAuth();
+  const { signin, signout } = useAuth();
+
+  useEffect(() => {
+    if (location.state?.authError) {
+      setErrorMessage(location.state.authError);
+      
+      // Limpiamos el estado después de leerlo (opcional, pero buena práctica)
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location.state, location.pathname, navigate]);
 
   const onValid = async (formData) => {
+    setErrorMessage('');
     try {
-      const { error } = await signin(formData.username, formData.password);
+      const { error, data } = await signin(formData.username, formData.password);
 
       if (error) {
         setErrorMessage(error.frontendErrorMessage);
 
         return;
       }
-
-      navigate('/admin/home');
+      const userRole = data?.role || localStorage.getItem('role');
+      if (userRole === 'Admin'){
+        navigate('/admin/home');
+      } else{
+        setErrorMessage('Tu cuenta no tiene autorización para acceder al panel de administración.');
+        
+        // Limpiamos la sesión inmediatamente para evitar que quede logueado
+        signout();
+      }
 
     } catch (error) {
       if (error?.response?.data?.code) {

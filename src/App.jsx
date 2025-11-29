@@ -38,10 +38,6 @@ function App() {
       element: <RegisterForm />,
     },
     {
-      path: '/products',
-      element: <ClientDashboard />,
-    },
-    {
       path: '/admin',
       element: (
         <ProtectedRoute>

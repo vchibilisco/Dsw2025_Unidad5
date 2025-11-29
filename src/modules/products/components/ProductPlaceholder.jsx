@@ -2,7 +2,10 @@ import Card from '../../shared/components/Card';
 
 function ProductPlaceholder({ product, onQuantityChange, onDelete }) {
   const unitPrice = Number(product?.currentUnitPrice) || 0;
-  const subtotal = unitPrice * product.quantity;
+  const { stockQuantity, quantity } = product;
+  const subtotal = unitPrice * quantity;
+  const isDisabled = quantity >= stockQuantity;
+  
 
   return (
     <Card className='w-full shadow-sm text-sm sm:text-base p-5 space-y-3'>
@@ -11,7 +14,7 @@ function ProductPlaceholder({ product, onQuantityChange, onDelete }) {
       </div>
 
       <div className='space-y-1 text-gray-600'>
-        <div>Cantidad de productos: {product.quantity}</div>
+        <div>Cantidad de productos: {quantity}</div>
         <div>Sub Total: ${subtotal.toFixed(2)}</div>
       </div>
 
@@ -22,10 +25,15 @@ function ProductPlaceholder({ product, onQuantityChange, onDelete }) {
         >
           −
         </button>
-        <span className='min-w-[24px] text-center'>{product.quantity}</span>
+        <span className='min-w-[24px] text-center'>{quantity}</span>
         <button
           onClick={() => onQuantityChange(product.sku, 1)}
-          className='px-3 py-1 bg-gray-200 rounded hover:bg-gray-300'
+          className={`px-3 py-1 rounded transition 
+            ${isDisabled 
+              ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+              : 'bg-gray-200 hover:bg-gray-300'
+            }`}
+          disabled={isDisabled}
         >
           +
         </button>

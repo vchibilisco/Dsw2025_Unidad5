@@ -7,7 +7,7 @@ export const getCart = () => {
 
     return raw ? JSON.parse(raw) : [];
   } catch (error) {
-    console.error('Error parsing cart from localStorage:', error);
+    //'Error parsing cart from localStorage:', error
 
     return [];
   }
@@ -16,7 +16,7 @@ export const getCart = () => {
 // Guarda el carrito en localStorage
 export const saveCart = (cartItems) => {
   if (!Array.isArray(cartItems)) {
-    console.warn('saveCart recibió un valor no iterable:', cartItems);
+    //'saveCart recibió un valor no iterable:', cartItems
 
     return;
   }
@@ -28,10 +28,10 @@ export const saveCart = (cartItems) => {
 // limitando la cantidad final al stock disponible.
 export const addToCart = (product, quantity) => {
 
-  // 1. Validación de entrada
+  // Validación de entrada
 
   if (!product || typeof product.sku !== 'string' || quantity <= 0) {
-    console.warn('addToCart recibió datos inválidos:', { product, quantity });
+    //'addToCart recibió datos inválidos:', product, quantity
 
     return;
   }
@@ -40,7 +40,7 @@ export const addToCart = (product, quantity) => {
   const stockAvailable = product.stockQuantity;
 
   if (typeof stockAvailable !== 'number' || stockAvailable <= 0) {
-    console.warn('Producto sin stock disponible o stock no definido:', product.sku);
+    //'Producto sin stock disponible o stock no definido:', product.sku
 
     return;
   }
@@ -48,7 +48,7 @@ export const addToCart = (product, quantity) => {
   const cart = getCart();
   const existing = cart.find((item) => item.sku === product.sku);
 
-  // 2. Calcular la cantidad total deseada y aplicar el límite
+  //  Calcular la cantidad total deseada y aplicar el límite
 
   // Cantidad actual del producto en el carrito (o 0 si es nuevo)
   const currentQuantity = existing ? existing.quantity : 0;
@@ -59,14 +59,7 @@ export const addToCart = (product, quantity) => {
   // La cantidad final es el menor valor entre lo deseado y el stock disponible
   const finalQuantity = Math.min(desiredQuantity, stockAvailable);
 
-  // 3. Opcional: Mostrar advertencia si se aplicó el límite
-  if (finalQuantity < desiredQuantity) {
-    console.warn(
-      `Se ha limitado la cantidad de ${product.name} a ${finalQuantity} unidades debido al stock disponible.`,
-    );
-  }
-
-  // 4. Actualizar el carrito solo si la cantidad final es mayor que 0
+  // Actualizar el carrito solo si la cantidad final es mayor que 0
   if (finalQuantity > 0) {
 
     const updatedCart = existing
@@ -85,7 +78,7 @@ export const addToCart = (product, quantity) => {
 export const removeFromCart = (sku) => {
   if (!sku || typeof sku !== 'string') {
 
-    console.warn('removeFromCart recibió SKU inválido:', sku);
+    //'removeFromCart recibió SKU inválido:', sku
 
     return;
   }
@@ -101,7 +94,7 @@ export const removeFromCart = (sku) => {
 export const updateCartItemQuantity = (sku, quantity) => {
   if (!sku || typeof sku !== 'string') {
 
-    console.warn('updateCartItemQuantity recibió SKU inválido:', sku);
+    //'updateCartItemQuantity recibió SKU inválido:', sku
 
     return;
   }
