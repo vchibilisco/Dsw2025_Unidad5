@@ -26,12 +26,14 @@ function ListProductsPage() {
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      const { data, error } = await getProducts(searchTerm, status, pageNumber, pageSize);
+      const { data, error } = await getProducts(status, searchTerm, pageNumber, pageSize);
+
+      console.log("DATA DEL BACKEND:", data);
 
       if (error) throw error;
 
-      setTotal(data.total);
-      setProducts(data.productItems);
+      setProducts(data.items);
+      setTotal(data.totalCount);
     } catch (error) {
       console.error(error);
     } finally {

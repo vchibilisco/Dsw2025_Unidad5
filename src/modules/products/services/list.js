@@ -1,9 +1,9 @@
 import { instance } from '../../shared/api/axiosInstance';
 
-export const getProducts = async (search = null, status = null, pageNumber = 1, pageSize = 20 ) => {
+export const getProducts = async (status = null, search = null, pageNumber = 1, pageSize = 20 ) => {
   const queryString = new URLSearchParams({
-    search,
     status,
+    search,
     pageNumber,
     pageSize,
   });
