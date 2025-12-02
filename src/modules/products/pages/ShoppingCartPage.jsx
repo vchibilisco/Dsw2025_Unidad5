@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { getCart, removeFromCart, updateCartItemQuantity, clearCart } from '../Context/cartStorage';
 import Card from '../../shared/components/Card';
 import ProductPlaceholder from '../components/ProductPlaceholder';
@@ -21,6 +21,48 @@ function ShoppingCartPage() {
 
   const { cartVersion } = useOutletContext();
 
+  const handleCheckout = useCallback(async () => {
+    if (!isAuthenticated) {
+      setPendingCheckout(true);
+      setShowLoginModal(true);
+
+      return;
+    }
+
+    const cartItems = getCart();
+
+    if (!customerId || cartItems.length === 0) {
+      alert('No se puede procesar la orden: faltan datos');
+
+      return;
+    }
+
+    const products = cartItems.map((item) => ({
+      id: item.id,
+      quantity: item.quantity,
+      currentunitPrice: item.currentUnitPrice,
+      name: item.name,
+    }));
+
+    const payload = {
+      customerId,
+      shippingAddress: 'Dirección de envío por defecto',
+      billingAddress: 'Dirección de facturación por defecto',
+      products,
+    };
+
+    const { data, error } = await createOrder(payload);
+
+    if (data) {
+      clearCart();
+      setCartItems([]);
+      alert('Orden creada correctamente');
+      navigate('/');
+    } else {
+      alert(`Error al crear orden: ${error?.message}`);
+    }
+  }, [isAuthenticated, customerId, navigate]);
+
   useEffect(() => {
     const items = JSON.parse(localStorage.getItem('cart') || '[]');
 
@@ -32,7 +74,7 @@ function ShoppingCartPage() {
       handleCheckout();
       setPendingCheckout(false);
     }
-  }, [isAuthenticated, pendingCheckout]);
+  }, [isAuthenticated, pendingCheckout, handleCheckout]);
 
   const handleQuantityChange = (sku, delta) => {
     const updatedItems = cartItems
@@ -70,49 +112,6 @@ function ShoppingCartPage() {
   const handleDelete = (sku) => {
     removeFromCart(sku);
     setCartItems((prev) => prev.filter((item) => item.sku !== sku));
-  };
-
-  const handleCheckout = async () => {
-    if (!isAuthenticated) {
-      setPendingCheckout(true);
-      setShowLoginModal(true);
-
-      return;
-    }
-
-    const cartItems = getCart();
-
-    if (!customerId || cartItems.length === 0) {
-
-      alert('No se puede procesar la orden: faltan datos');
-
-      return;
-    }
-
-    const products = cartItems.map((item) => ({
-      id: item.id,
-      quantity: item.quantity,
-      currentunitPrice: item.currentUnitPrice,
-      name: item.name,
-    }));
-
-    const payload = {
-      customerId,
-      shippingAddress: 'Dirección de envío por defecto',
-      billingAddress: 'Dirección de facturación por defecto',
-      products,
-    };
-
-    const { data, error } = await createOrder(payload);
-
-    if (data) {
-      clearCart();
-      setCartItems([]);
-      alert('Orden creada correctamente');
-      navigate('/');
-    } else {
-      alert(`Error al crear orden: ${error?.message}`);
-    }
   };
 
   const totalQuantity = cartItems.reduce((acc, item) => acc + item.quantity, 0);

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import Button from '../../shared/components/Button';
 import Card from '../../shared/components/Card';
 import { getOrdersWithCustomerName } from '../services/listServices';
@@ -41,10 +41,15 @@ function ListOrdersPage() {
     return id.slice(0, 8).toUpperCase();
   };
 
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async () => {
     try {
       setLoading(true);
-      const { data, error } = await getOrdersWithCustomerName(searchTerm, status, pageNumber, pageSize);
+      const { data, error } = await getOrdersWithCustomerName(
+        searchTerm,
+        status,
+        pageNumber,
+        pageSize,
+      );
 
       if (error) throw error;
 
@@ -57,11 +62,11 @@ function ListOrdersPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [searchTerm, status, pageNumber, pageSize]);
 
   useEffect(() => {
     fetchOrders();
-  }, [status, pageNumber, pageSize]);
+  }, [fetchOrders]);
 
   const totalPages = Math.ceil(total / pageSize);
 
@@ -158,7 +163,7 @@ function ListOrdersPage() {
               <h3 className='font-semibold mb-2 text-base sm:text-lg'>Items:</h3>
               {selectedOrder.orderItems.map((item, index) => (
                 <div key={index} className='mb-2 border-b pb-2'>
-                  <p className='text-sm sm:text-base'><strong>Producto:</strong> {item.name }</p>
+                  <p className='text-sm sm:text-base'><strong>Producto:</strong> {item.name}</p>
                   <p className='text-sm sm:text-base'><strong>Producto ID:</strong> {item.productId}</p>
                   <p className='text-sm sm:text-base'><strong>Cantidad:</strong> {item.quantity}</p>
                   <p className='text-sm sm:text-base'><strong>Precio unitario:</strong> ${item.unitPrice}</p>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { getActiveProductsPaginated } from '../services/listCustomer';
 import CartItem from '../components/CartItem';
 import PaginationControls from '../../shared/components/PaginationControls';
@@ -12,7 +12,7 @@ function ListProductCustomerPage({ searchTerm }) {
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
 
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     try {
       setLoading(true);
       const { data, pagination, error } = await getActiveProductsPaginated({
@@ -39,13 +39,13 @@ function ListProductCustomerPage({ searchTerm }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [searchTerm, pageNumber, pageSize]);
 
   useEffect(() => {
 
     fetchProducts();
 
-  }, [pageNumber, pageSize, searchTerm]);
+  }, [pageNumber, pageSize, searchTerm, fetchProducts]);
 
   return (
     <div className="p-4">

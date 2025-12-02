@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Button from '../../shared/components/Button';
 import Card from '../../shared/components/Card';
@@ -24,7 +24,7 @@ function ListProductsPage() {
 
   const [loading, setLoading] = useState(false);
 
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     try {
       setLoading(true);
       const { data, error } = await getProducts(searchTerm, status, pageNumber, pageSize);
@@ -38,11 +38,11 @@ function ListProductsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [searchTerm, status, pageNumber, pageSize]);
 
   useEffect(() => {
     fetchProducts();
-  }, [status, pageSize, pageNumber]);
+  }, [status, pageSize, pageNumber, fetchProducts]);
 
   const totalPages = Math.ceil(total / pageSize);
 
