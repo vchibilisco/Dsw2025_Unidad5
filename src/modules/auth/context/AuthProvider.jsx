@@ -1,6 +1,7 @@
 import { createContext, useState, useContext } from 'react';
 import { login } from '../services/login';
-import  register  from '../services/signup';
+// Se asume que register es un default export, si es un named export, usar { register }
+import register from '../services/signup'; 
 
 const AuthContext = createContext();
 
@@ -17,11 +18,11 @@ const loadInitialState = () => {
 };
 
 function AuthProvider({ children }) {
-    // Usamos un estado que consolida toda la información de Auth
+    // Estado que consolida la información de autenticación
     const [authState, setAuthState] = useState(loadInitialState);
 
     const singout = () => {
-        // Limpiar todas las claves relevantes al cerrar sesión
+        // Limpiar las claves al cerrar sesión
         localStorage.removeItem('token');
         localStorage.removeItem('customerId');
         
@@ -33,7 +34,7 @@ function AuthProvider({ children }) {
     };
 
     const singin = async (username, password) => {
-        // La función login (en login.js) DEBE devolver { data: { token, customerId }, error }
+        // La función login DEBE devolver { data: { token, customerId }, error }
         const { data, error } = await login(username, password); 
 
         if (error) {
@@ -53,38 +54,20 @@ function AuthProvider({ children }) {
         return { error: null };
     };
 
-    localStorage.setItem('token', data);
-    setIsAuthenticated(true);
+    // Función para el registro de nuevos usuarios
+    const signup = async(formData) =>{ // Recibe un objeto con todos los datos
+        // Se asume que register en signup.js maneja la llamada a la API
+        const { user, error } = await register(formData);
 
-    return { error: null };
-  };
-
-  const signup = async(username, email, password, role) =>{
-    const { user, error } = await register(username, email, password, role);
-
-    if (error) {
-      return {error};
+        if (error) {
+            return { error };
+        }
+        
+        // No logueamos al usuario automáticamente, solo devolvemos éxito
+        return { user, error: null }; 
     }
 
-    return { user, error: null };
-  }
-
-  
-
-
-  return (
-    <AuthContext.Provider
-      value={ {
-        isAuthenticated,
-        singin,
-        singout,
-        signup,
-      } }
-    >
-      {children}
-    </AuthContext.Provider>
-  );
-    // Objeto 'user' para el consumo fácil en componentes como CheckoutPage
+    // Objeto 'user' para consumo fácil (CheckoutPage usa user.customerId)
     const user = {
         customerId: authState.customerId,
     };
@@ -97,6 +80,7 @@ function AuthProvider({ children }) {
                 token: authState.token, // 'abc.123.xyz'
                 singin,
                 singout,
+                signup, // <--- FUNCIÓN DE REGISTRO AÑADIDA
             } }
         >
             {children}
