@@ -11,6 +11,7 @@ import RegisterPage from './modules/auth/pages/RegisterPage';
 import Header from './modules/templates/components/Header';
 import ListProductMainPage from './modules/products/pages/ListProductMainPage';
 import Cart from './modules/cart/Cart';
+import CheckoutPage from './modules/orders/pages/CheckoutPage';
 
 function App() {
   const router = createBrowserRouter([
@@ -34,6 +35,10 @@ function App() {
         {
           path: '/cart',
           element: <Cart />,
+        },
+        {
+          path: '/checkout', 
+          element: <CheckoutPage />,
         },
       ],
     },
