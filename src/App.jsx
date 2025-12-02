@@ -7,20 +7,37 @@ import ListOrdersPage from './modules/orders/pages/ListOrdersPage';
 import Home from './modules/home/pages/Home';
 import ListProductsPage from './modules/products/pages/ListProductsPage';
 import CreateProductPage from './modules/products/pages/CreateProductPage';
+import Header from './modules/templates/components/Header';
+import ListProductMainPage from './modules/products/pages/ListProductMainPage';
+import Cart from './modules/cart/Cart';
+import CheckoutPage from './modules/orders/pages/CheckoutPage';
 
 function App() {
   const router = createBrowserRouter([
     {
       path: '/',
-      element: <><Outlet /></>,
+      element: (
+        // Layout principal para la parte pública (Cliente)
+        <>
+          <Header />
+          <main className="container mx-auto p-4">
+            {/* EL OUTLET ES CRUCIAL: Aquí se muestran el catálogo o el carrito */}
+            <Outlet />
+          </main>
+        </>
+      ),
       children: [
         {
           path: '/',
-          element: <>Listado de productos</>,
+          element: <ListProductMainPage />,
         },
         {
           path: '/cart',
-          element: <>Carrito de compras</>,
+          element: <Cart />,
+        },
+        {
+          path: '/checkout', 
+          element: <CheckoutPage />,
         },
       ],
     },
