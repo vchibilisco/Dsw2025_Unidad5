@@ -19,29 +19,46 @@ export const listOrders = async () => {
 };
 
 export const createOrder = async (orderData, token) => {
-  [cite_start];
-  const response = await fetch("/api/orders", {
-    // POST a /api/orders [cite: 266]
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`, // Usar el token pasado
-    },
-    body: JSON.stringify(orderData), // Enviar el payload de la orden
-  });
+  try {
+    const response = await fetch(API_BASE_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`, // Envío del token
+      },
+      body: JSON.stringify(orderData), // Envío del payload
+    });
 
-  if (response.ok) {
-    const data = await response.json();
-    return { success: true, data, error: null }; // Retorna éxito
-  } else {
-    [cite_start]; // Manejo de errores: 400 Bad Request por datos inválidos o stock insuficiente [cite: 292]
-    const error = await response.json();
-    let errorMessage = "Ocurrió un error inesperado al crear la orden.";
+    if (response.ok) {
+      // Espera 201 Created
+      const data = await response.json();
+      return { success: true, data, error: null };
+    } else {
+      const errorBody = await response.json();
+      let errorMessage;
 
-    if (response.status === 400 && error.message) {
-      errorMessage = error.message; // Mostrar mensaje de stock o validación
+      if (response.status === 400) {
+        // El backend usa excepciones para stock insuficiente o datos inválidos.
+        // Intentamos obtener el mensaje de error que el backend devuelve (puede ser 'message' o 'detail').
+        errorMessage =
+          errorBody.message ||
+          errorBody.detail ||
+          "Datos de orden inválidos o stock insuficiente.";
+      } else if (response.status === 401) {
+        errorMessage = "No autorizado. Tu sesión ha expirado.";
+      } else {
+        // Para 500 Internal Server Error u otros.
+        errorMessage = `Error ${response.status}: Ocurrió un fallo inesperado en el servidor.`;
+      }
+
+      return { success: false, data: null, error: errorMessage };
     }
-
-    return { success: false, data: null, error: errorMessage };
+  } catch (error) {
+    console.error("Error de conexión:", error);
+    return {
+      success: false,
+      data: null,
+      error: "No se pudo conectar al servidor.",
+    };
   }
 };

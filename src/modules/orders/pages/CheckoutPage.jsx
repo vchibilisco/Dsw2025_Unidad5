@@ -3,11 +3,11 @@ import { data, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useCart } from "../../cart/useCart";
 import { useAuth } from "../../auth/context/AuthProvider";
-import { createOrder } from "../services/listServices";
+import { createOrder } from "../services/listServices"; // Asegúrate que listServices exporte createOrder
 
 const CheckoutPage = () => {
   const { cartItems, cartTotal, clearCart } = useCart();
-  //asegurarse de que el useAuth real provea user.customerId y el token
+  // Asegurarse de que el useAuth real provea user.customerId y el token
   const { user, token } = useAuth();
   const navigate = useNavigate();
 
@@ -19,32 +19,34 @@ const CheckoutPage = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [submissionError, setSubmissionError] = useState(null);
 
-  //validacion de seguridad y flujo
+  // Validación de seguridad y flujo
   useEffect(() => {
-    //si el carrito esta vacio redirigir
-    if (cartItems.lenght === 0) {
+    // Corrección de sintaxis: .lenght -> .length
+    // si el carrito esta vacio redirigir
+    if (cartItems.length === 0) {
       navigate("/cart");
       return;
     }
-    //si no hay usuario (o token) redirigir para forzar login
+    // si no hay usuario (o token) redirigir para forzar login
     if (!user || !token) {
       alert("Debes estar logueado para finalizar la compra.");
       navigate("/cart");
       return;
     }
-  }, [cartItems.lenght, navigate, user, token]);
+  }, [cartItems.length, navigate, user, token]); // Corrección de dependencia .lenght
 
-  //si no cumple la condiciones iniciales no renderiza el form
-  if (cartItems.lenght === 0 || !user || !token) {
+  // Corrección de sintaxis: .lenght -> .length
+  // si no cumple la condiciones iniciales no renderiza el form
+  if (cartItems.length === 0 || !user || !token) {
     return null;
   }
 
-  //funcion central de proceso
+  // funcion central de proceso
   const processOrder = async (data) => {
-    //doble check por si el user object no tiene id
+    // doble check por si el user object no tiene id
     if (!user.customerId) {
       setSubmissionError(
-        "Id del cliente no disponible, porfavor reiniciar la sesion"
+        "Id del cliente no disponible, por favor reinicia la sesión."
       );
       return;
     }
@@ -52,34 +54,43 @@ const CheckoutPage = () => {
     setIsProcessing(true);
     setSubmissionError(null);
 
-    //construir el payload
+    // Construir el payload para C# (usando camelCase para las claves JSON)
     const orderItemsPayload = cartItems.map((item) => ({
-      ProductId: item.id,
-      Quantity: item.quantity,
+      // C# OrderItemRequest.ProductId (Guid) -> JSON productId
+      productId: item.id,
+      // C# OrderItemRequest.Quantity (int) -> JSON quantity
+      quantity: item.quantity,
     }));
 
     const orderData = {
-      CustomerId: user.customerId,
-      ShippingAddress: data.shippingAddress,
-      BillingAddress: data.billingAddress,
-      Notes: data.note || null,
-      OrderItems: orderItemsPayload,
+      // C# OrderRequest.CustomerId -> JSON customerId
+      customerId: user.customerId,
+      // C# OrderRequest.ShippingAddress -> JSON shippingAddress
+      shippingAddress: data.shippingAddress,
+      // C# OrderRequest.BillingAddress -> JSON billingAddress
+      billingAddress: data.billingAddress,
+      // C# OrderRequest.Notes -> JSON notes (El campo del formulario es "notes")
+      notes: data.notes || null,
+      // C# OrderRequest.Items (List) -> JSON items
+      items: orderItemsPayload, // ¡Nombre del array corregido a 'items' y en camelCase!
     };
 
-    //llamar a la api
+    // llamar a la api
     const result = await createOrder(orderData, token);
 
-    //manejar el reusltado
-    if (result.succes) {
+    // manejar el resultado
+    // Corrección de sintaxis: result.succes -> result.success
+    if (result.success) {
       alert(
         `✅ ¡Orden #${
+          // Propiedades de OrderResponse en camelCase
           result.data.orderId
         } creada! Total: $${result.data.totalAmount.toFixed(2)}`
       );
       clearCart();
       navigate("/");
     } else {
-      //error de stock 400 o servidor
+      // error de stock 400 o servidor
       setSubmissionError(result.error);
     }
 
