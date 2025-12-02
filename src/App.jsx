@@ -7,6 +7,7 @@ import ListOrdersPage from './modules/orders/pages/ListOrdersPage';
 import Home from './modules/home/pages/Home';
 import ListProductsPage from './modules/products/pages/ListProductsPage';
 import CreateProductPage from './modules/products/pages/CreateProductPage';
+import RegisterPage from './modules/auth/pages/RegisterPage';
 import Header from './modules/templates/components/Header';
 import ListProductMainPage from './modules/products/pages/ListProductMainPage';
 import Cart from './modules/cart/Cart';
@@ -44,6 +45,10 @@ function App() {
     {
       path: '/login',
       element: <LoginPage />,
+    },
+    {
+      path: '/singup',
+      element: <RegisterPage />,
     },
     {
       path: '/admin',

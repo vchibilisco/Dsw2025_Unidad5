@@ -1,5 +1,6 @@
 import { createContext, useState, useContext } from 'react';
 import { login } from '../services/login';
+import  register  from '../services/signup';
 
 const AuthContext = createContext();
 
@@ -52,6 +53,37 @@ function AuthProvider({ children }) {
         return { error: null };
     };
 
+    localStorage.setItem('token', data);
+    setIsAuthenticated(true);
+
+    return { error: null };
+  };
+
+  const signup = async(username, email, password, role) =>{
+    const { user, error } = await register(username, email, password, role);
+
+    if (error) {
+      return {error};
+    }
+
+    return { user, error: null };
+  }
+
+  
+
+
+  return (
+    <AuthContext.Provider
+      value={ {
+        isAuthenticated,
+        singin,
+        singout,
+        signup,
+      } }
+    >
+      {children}
+    </AuthContext.Provider>
+  );
     // Objeto 'user' para el consumo fácil en componentes como CheckoutPage
     const user = {
         customerId: authState.customerId,
