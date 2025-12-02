@@ -2,7 +2,7 @@ import Card from '../../shared/components/Card';
 import { useEffect, useState } from 'react';
 import { getOrderCount, getProductCount } from './services/dashboardServices';
 
-function Home() {
+function HomePage() {
 
   const [orderCount, setOrderCount] = useState(null);
   const [productCount, setProductCount] = useState(null);
@@ -39,4 +39,4 @@ function Home() {
   );
 };
 
-export default Home;
+export default HomePage;

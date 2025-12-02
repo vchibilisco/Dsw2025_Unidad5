@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { getActiveProductsPaginated } from '../services/listCustomer';
-import CartItem from './CartItem';
+import CartItem from '../components/CartItem';
 import PaginationControls from '../../shared/components/PaginationControls';
 
-function ListProductCustomer({ searchTerm }) {
+function ListProductCustomerPage({ searchTerm }) {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -75,4 +75,4 @@ function ListProductCustomer({ searchTerm }) {
   );
 }
 
-export default ListProductCustomer;
+export default ListProductCustomerPage;

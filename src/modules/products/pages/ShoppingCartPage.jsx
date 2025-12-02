@@ -8,7 +8,7 @@ import { useOutletContext } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import UserLoginForm from '../../auth/components/UserLoginForm';
 
-function ShoppingCart() {
+function ShoppingCartPage() {
   const [cartItems, setCartItems] = useState([]);
 
   const { isAuthenticated, customerId } = useAuth();
@@ -202,4 +202,4 @@ function ShoppingCart() {
   );
 }
 
-export default ShoppingCart;
+export default ShoppingCartPage;

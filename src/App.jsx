@@ -4,13 +4,13 @@ import LoginPage from './modules/auth/pages/LoginPage';
 import Dashboard from './modules/templates/components/Dashboard';
 import ProtectedRoute from './modules/auth/components/ProtectedRoute';
 import ListOrdersPage from './modules/orders/pages/ListOrdersPage';
-import Home from './modules/home/pages/Home';
+import HomePage from './modules/home/pages/HomePage';
 import ListProductsPage from './modules/products/pages/ListProductsPage';
 import CreateProductPage from './modules/products/pages/CreateProductPage';
 import ClientDashboard from './modules/templates/components/ClientDashboard';
-import ShoppingCart from './modules/products/pages/ShoppingCart';
+import ShoppingCartPage from './modules/products/pages/ShoppingCartPage';
 import CartItem from './modules/products/components/CartItem';
-import ListProductCustomer from './modules/products/components/ListProductCustomer';
+import ListProductCustomerPage from './modules/products/pages/ListProductCustomerPage';
 import RegisterForm from './modules/auth/components/RegisterForm';
 
 function App() {
@@ -21,11 +21,11 @@ function App() {
       children: [
         {
           path: '/',
-          element: <ListProductCustomer  />,
+          element: <ListProductCustomerPage  />,
         },
         {
           path: '/cart',
-          element: <ShoppingCart />,
+          element: <ShoppingCartPage />,
         },
       ],
     },
@@ -47,7 +47,7 @@ function App() {
       children: [
         {
           path: '/admin/home',
-          element: <Home />,
+          element: <HomePage />,
         },
         {
           path: '/admin/products',
