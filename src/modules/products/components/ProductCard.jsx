@@ -9,7 +9,7 @@ export default function ProductCard({ product }) {
     const handleAddToCart = () => {
         addToCart(product, 1);
         // usamos console.log en lugar de alert para evitar detener la app en el navegador
-        console.log(`"${product.name}" added to cart! Current cart items: ${localStorage.getItem('cart')}`); 
+        console.log(`"${product.name}" added to cart! Current cart items: ${JSON.parse(localStorage.getItem('cart'))}`); 
     };
 
     return (
@@ -31,23 +31,23 @@ export default function ProductCard({ product }) {
                 
                 <div className="mt-auto pt-4 border-t border-gray-50">
                     <div className="flex items-center justify-between mb-4">
-                        <span className="text-2xl font-bold text-gray-900">${product.price}</span>
-                        <span className={`text-xs font-medium px-2 py-1 rounded-md ${product.stock > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                            {product.stock > 0 ? `${product.stock} disp.` : 'Agotado'}
+                        <span className="text-2xl font-bold text-gray-900">${product.currentUnitPrice}</span>
+                        <span className={`text-xs font-medium px-2 py-1 rounded-md ${product.stockQuantity > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                            {product.stockQuantity > 0 ? `${product.stockQuantity} disp.` : 'Agotado'}
                         </span>
                     </div>
                     
                     <button 
                         onClick={handleAddToCart}
-                        disabled={product.stock === 0}
+                        disabled={product.stockQuantity === 0}
                         className={`w-full py-2.5 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors ${
-                            product.stock > 0 
+                            product.stockQuantity > 0 
                             ? 'bg-gray-900 text-white hover:bg-gray-800' 
                             : 'bg-gray-200 text-gray-400 cursor-not-allowed'
                         }`}
                     >
                         <ShoppingCart size={18} />
-                        {product.stock > 0 ? 'Agregar al Carrito' : 'Sin Stock'}
+                        {product.stockQuantity > 0 ? 'Agregar al Carrito' : 'Sin Stock'}
                     </button>
                 </div>
             </div>

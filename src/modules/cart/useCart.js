@@ -19,6 +19,7 @@ const getCartFromLocalStorage = () => {
 const saveCartToLocalStorage = (items) => {
     try {
         localStorage.setItem(CART_KEY, JSON.stringify(items));
+        
     } catch (error) {
         console.error('Error al guardar el carrito de localStorage:', error);
     }
@@ -40,6 +41,8 @@ export const useCart = () => {
         setCartItems(prevItems => {
             const existingItemIndex = prevItems.findIndex(item => item.id === product.id);
 
+            console.log("Precio del producto", product.currentUnitPrice);
+
             if (existingItemIndex > -1) {
                 // Producto ya existe, incrementamos cantidad
                 const newItems = [...prevItems];
@@ -49,9 +52,9 @@ export const useCart = () => {
                 // Nuevo producto, lo agregamos
                 const newItem = {
                     id: product.id,
-                    name: product.name,
-                    price: product.price,
                     sku: product.sku,
+                    name: product.name,
+                    currentUnitPrice: product.currentUnitPrice,
                     quantity: quantity,
                 };
                 return [...prevItems, newItem];

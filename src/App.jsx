@@ -7,11 +7,11 @@ import ListOrdersPage from './modules/orders/pages/ListOrdersPage';
 import Home from './modules/home/pages/Home';
 import ListProductsPage from './modules/products/pages/ListProductsPage';
 import CreateProductPage from './modules/products/pages/CreateProductPage';
-import RegisterPage from './modules/auth/pages/RegisterPage';
 import Header from './modules/templates/components/Header';
 import ListProductMainPage from './modules/products/pages/ListProductMainPage';
 import Cart from './modules/cart/Cart';
-import CheckoutPage from './modules/orders/pages/CheckoutPage';
+
+import RegisterPage from './modules/auth/pages/RegisterPage';
 
 function App() {
   const router = createBrowserRouter([
@@ -36,10 +36,7 @@ function App() {
           path: '/cart',
           element: <Cart />,
         },
-        {
-          path: '/checkout', 
-          element: <CheckoutPage />,
-        },
+        
       ],
     },
     {
@@ -47,15 +44,15 @@ function App() {
       element: <LoginPage />,
     },
     {
-      path: '/singup',
+      path: '/signup',
       element: <RegisterPage />,
     },
     {
       path: '/admin',
       element: (
-        <ProtectedRoute>
+        //<ProtectedRoute>
           <Dashboard />
-        </ProtectedRoute>
+        //</ProtectedRoute>
       ),
       children: [
         {

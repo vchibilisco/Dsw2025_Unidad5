@@ -61,7 +61,8 @@ const useAuth = () => {
 
 const CartItemRow = ({ item, updateQuantity, removeFromCart }) => {
   // ... (Tu código de CartItemRow) ...
-  const subtotal = item.price * item.quantity;
+  const subtotal = item.currentUnitPrice * item.quantity;
+  console.log("Cart item:", item);
 
   return (
     <tr className="flex flex-wrap border-b hover:bg-gray-50 mb-4 p-4 rounded-lg shadow-sm sm:table-row sm:p-0 sm:shadow-none sm:mb-0">
@@ -74,14 +75,14 @@ const CartItemRow = ({ item, updateQuantity, removeFromCart }) => {
           <p className="font-semibold text-gray-800">{item.name}</p>
           {/* PRECIO MÓVIL */}
           <p className="text-sm text-gray-500 sm:hidden">
-            Precio: ${item.price.toFixed(2)}
+            Precio: ${item.currentUnitPrice.toFixed(2)}
           </p>
         </div>
       </td>
 
       {/* PRECIO UNITARIO (Columna 2 - Oculto en móvil) */}
       <td className="p-4 text-center hidden sm:table-cell">
-        ${item.price.toFixed(2)}
+        ${item.currentUnitPrice.toFixed(2)}
       </td>
 
       {/* CANTIDAD (Columna 3 - Funcionalidad de +/-) */}
@@ -126,6 +127,9 @@ const CartItemRow = ({ item, updateQuantity, removeFromCart }) => {
         </button>
       </td>
     </tr>
+
+    
+
   );
 };
 
