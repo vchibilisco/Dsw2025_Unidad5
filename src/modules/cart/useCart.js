@@ -32,7 +32,6 @@ export const useCart = () => {
     // Cada vez que cartItems cambia, guarda en localStorage
     useEffect(() => {
         saveCartToLocalStorage(cartItems);
-        // Ojo: Solo queremos que esto se ejecute cuando el estado interno (cartItems) cambia
     }, [cartItems]);
 
     // Función para agregar o incrementar la cantidad de un producto
@@ -48,11 +47,11 @@ export const useCart = () => {
             } else {
                 // Nuevo producto, lo agregamos
                 const newItem = {
-                    id: product.id,
+                    id: product.id,      // ID CRÍTICO (ProductId en C#)
                     name: product.name,
-                    price: product.price,
+                    price: product.price, // PRECIO CRÍTICO (Para cálculo de subtotal)
                     sku: product.sku,
-                    quantity: quantity,
+                    quantity: quantity,    // CANTIDAD CRÍTICA (Quantity en C#)
                 };
                 return [...prevItems, newItem];
             }
@@ -95,6 +94,7 @@ export const useCart = () => {
         updateQuantity,
         clearCart,
         cartCount: cartItems.reduce((total, item) => total + item.quantity, 0),
+        // Cálculo del total para el checkout
         cartTotal: cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0),
     };
 };
