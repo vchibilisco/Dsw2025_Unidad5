@@ -23,8 +23,20 @@ function AuthProvider({ children }) {
       return { error };
     }
 
-    localStorage.setItem('token', data);
-    setIsAuthenticated(true);
+    if (data.token){
+      localStorage.setItem('token', data.token);
+      setIsAuthenticated(true);
+    }
+
+    if (data.customerId){
+      localStorage.setItem('customerId', data.customerId);
+    } else {
+      localStorage.removeItem('customerId'); // Limpiar si es Admin
+    }
+    
+    if (data.role){
+      localStorage.setItem('role', data.role);
+    }
 
     return { error: null };
   };
@@ -44,8 +56,8 @@ function AuthProvider({ children }) {
         setIsAuthenticated(true);
     }
 
-    if (user.CustomerId) {
-        localStorage.setItem('customerId', user.CustomerId);
+    if (user.customerId) {
+        localStorage.setItem('customerId', user.customerId);
     } else {
         localStorage.removeItem('customerId');
     }

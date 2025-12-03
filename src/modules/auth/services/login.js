@@ -5,7 +5,7 @@ export const login = async (username, password) => {
   try{
     const response = await instance.post('api/auth/login', { username, password });
 
-  return { data: response.data.token, error: null };
+  return { data: response.data, error: null };
   }
   catch (error){
   return{data: null, error: error};
