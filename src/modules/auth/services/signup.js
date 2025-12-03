@@ -9,9 +9,10 @@ const register = async (username, email, password, role) => {
       role
     });
 
-    return { user: response.data };
+    // CORRECCIÓN: Devolver response.data completo (contiene token y customerId)
+    return { user: response.data, error: null };
   } catch (error) {
-    return { error: error.response.data };
+    return { user: null, error: error.response?.data || "Error de conexión" };
   }
 };
 

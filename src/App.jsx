@@ -10,8 +10,8 @@ import CreateProductPage from './modules/products/pages/CreateProductPage';
 import Header from './modules/templates/components/Header';
 import ListProductMainPage from './modules/products/pages/ListProductMainPage';
 import Cart from './modules/cart/Cart';
-
 import RegisterPage from './modules/auth/pages/RegisterPage';
+import CheckoutPage from './modules/orders/pages/CheckoutPage';
 
 function App() {
   const router = createBrowserRouter([
@@ -36,7 +36,10 @@ function App() {
           path: '/cart',
           element: <Cart />,
         },
-        
+        {
+          path: '/checkout',
+          element: <CheckoutPage />,
+        }
       ],
     },
     {
@@ -50,9 +53,9 @@ function App() {
     {
       path: '/admin',
       element: (
-        //<ProtectedRoute>
+        <ProtectedRoute>
           <Dashboard />
-        //</ProtectedRoute>
+        </ProtectedRoute>
       ),
       children: [
         {
