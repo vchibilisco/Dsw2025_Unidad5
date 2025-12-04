@@ -1,6 +1,7 @@
 import { createContext, useState } from 'react';
 import { login } from '../services/login';
 import  register  from '../services/signup';
+import { registerUser } from '../services/signupUser';
 
 const AuthContext = createContext();
 
@@ -40,6 +41,32 @@ function AuthProvider({ children }) {
 
     return { error: null };
   };
+  
+  const signupUser = async(username, email, password) =>{
+    const { user, error } = await registerUser(username, email, password);
+
+    if (error) {
+      return { error };
+    }
+
+    const token = user.token || user.Token;
+    const customerId = user.customerId || user.CustomerId;
+
+    const role = user.role || user.Role || 'User'; 
+
+    if (token) {
+        localStorage.setItem('token', token);
+        setIsAuthenticated(true);
+    }
+
+     if (customerId) {
+        localStorage.setItem('customerId', customerId);
+    }
+
+    localStorage.setItem('role', role);
+
+    return { user, error: null };
+  }
 
   const signup = async(username, email, password, role) => {
     const { user, error } = await register(username, email, password, role);
@@ -79,6 +106,7 @@ function AuthProvider({ children }) {
         singin,
         singout,
         signup,
+        signupUser,
       } }
     >
       {children}

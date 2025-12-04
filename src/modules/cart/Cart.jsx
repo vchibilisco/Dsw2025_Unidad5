@@ -1,13 +1,16 @@
 import React, { useState, useMemo } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useCart } from "./useCart"; 
-import { useForm } from "react-hook-form"; 
-import { Trash2, Minus, Plus, ShoppingCart, Package, X, LogIn } from "lucide-react";
+import { ShoppingCart, Package, Minus, Plus, Trash2 } from "lucide-react";
 
-// IMPORTANTE: Importar tu hook real de autenticación
+// 1. Importamos el hook de Auth para verificar si está logueado
 import useAuth from "../auth/hook/useAuth"; 
 
-// --- Componente Fila del Carrito (Lo dejamos igual) ---
+// 2. Importamos los Modales reutilizables que creamos anteriormente
+import LoginModal from "../shared/components/LoginModal";
+import RegisterModal from "../shared/components/registerModal";
+
+// --- Subcomponente para las filas (se mantiene igual) ---
 const CartItemRow = ({ item, updateQuantity, removeFromCart }) => {
   const subtotal = item.currentUnitPrice * item.quantity;
 
@@ -61,107 +64,14 @@ const CartItemRow = ({ item, updateQuantity, removeFromCart }) => {
   );
 };
 
-// --- Modal de Login (Conectado al Auth Real) ---
-const LoginModal = ({ onClose }) => {
-  const navigate = useNavigate();
-  // Usamos el hook real de auth
-  const { singin } = useAuth(); 
-  const [errorMessage, setErrorMessage] = useState('');
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
-
-  const onSubmit = async (data) => {
-    // 1. Llamamos al backend real
-    const { error } = await singin(data.email, data.password);
-
-    if (error) {
-       // Manejo de error visual
-       if (typeof error === 'string') setErrorMessage(error);
-       else if (error.frontendErrorMessage) setErrorMessage(error.frontendErrorMessage);
-       else setErrorMessage("Error de credenciales");
-       return;
-    }
-
-    // 2. Si login es exitoso:
-    alert("Login exitoso. Redirigiendo al checkout...");
-    onClose(); 
-    navigate("/checkout");
-  };
-
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl p-8 max-w-md w-full shadow-2xl relative">
-        <button
-            onClick={onClose}
-            className="absolute top-4 right-4 text-gray-500 hover:text-gray-800"
-        >
-            <X size={24} />
-        </button>
-        
-        <div className="flex justify-between items-center mb-6 border-b pb-2">
-          <h3 className="text-xl font-bold flex items-center gap-2">
-            <LogIn size={20} /> Inicia Sesión
-          </h3>
-        </div>
-
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Usuario / Email</label>
-            <input
-              type="text"
-              {...register("email", { required: "Usuario requerido" })}
-              className="w-full px-4 py-2 border rounded-lg"
-            />
-             {errors.email && <span className="text-red-500 text-xs">{errors.email.message}</span>}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
-            <input
-              type="password"
-              {...register("password", { required: "Contraseña requerida" })}
-              className="w-full px-4 py-2 border rounded-lg"
-            />
-            {errors.password && <span className="text-red-500 text-xs">{errors.password.message}</span>}
-          </div>
-
-          <button
-            type="submit"
-            className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
-          >
-            Ingresar y Continuar
-          </button>
-          
-          {errorMessage && <p className="text-red-500 text-center mt-2">{errorMessage}</p>}
-        </form>
-        
-        <div className="mt-4 text-center">
-            <span className="text-sm text-gray-600">¿No tienes cuenta? </span>
-            <span 
-                className="text-sm text-blue-600 font-bold cursor-pointer hover:underline"
-                onClick={() => { onClose(); navigate('/signup'); }}
-            >
-                Regístrate aquí
-            </span>
-        </div>
-      </div>
-    </div>
-  );
-};
-
 // --- Componente Principal Cart ---
 const Cart = () => {
   const { cartItems, cartTotal, clearCart, updateQuantity, removeFromCart } = useCart();
-  
-  // Usamos isAuthenticated del hook real
   const { isAuthenticated } = useAuth(); 
-  
   const navigate = useNavigate();
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+
+  // Estado para controlar qué modal se muestra: 'none', 'login', 'register'
+  const [activeModal, setActiveModal] = useState('none'); 
 
   const totalItems = useMemo(
     () => cartItems.reduce((acc, item) => acc + item.quantity, 0),
@@ -174,12 +84,14 @@ const Cart = () => {
       return;
     }
 
-    // LOGICA: Si NO está autenticado, abrir modal. Si SÍ, ir a checkout.
+    // LÓGICA PRINCIPAL:
+    // Si no está autenticado, abrimos el modal de Login.
     if (!isAuthenticated) {
-      setIsLoginModalOpen(true);
+      setActiveModal('login'); 
       return;
     }
 
+    // Si sí está autenticado, procedemos al checkout
     navigate("/checkout");
   };
 
@@ -199,13 +111,13 @@ const Cart = () => {
   }
 
   return (
-    <div className="max-w-7xl mx-auto py-8">
+    <div className="max-w-7xl mx-auto py-8 px-4">
       <h1 className="text-3xl font-bold text-gray-800 mb-6">Tu Carrito de Compras</h1>
+      
       <div className="flex flex-col lg:flex-row gap-8">
         
-        {/* Tabla */}
+        {/* Tabla de Productos */}
         <div className="lg:w-3/4 bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
-           {/* ... Misma tabla que tenías antes ... */}
            <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50 hidden sm:table-header-group">
                 <tr>
@@ -229,7 +141,7 @@ const Cart = () => {
             </table>
         </div>
 
-        {/* Resumen */}
+        {/* Resumen y Botones */}
         <div className="lg:w-1/4 bg-white p-6 rounded-xl shadow-lg h-fit border border-gray-200">
           <h2 className="text-xl font-bold text-gray-800 mb-4 border-b pb-3">Resumen del Pedido</h2>
           <div className="space-y-3 mb-6">
@@ -259,9 +171,22 @@ const Cart = () => {
         </div>
       </div>
 
-      {/* Renderizado condicional del Modal */}
-      {isLoginModalOpen && (
-        <LoginModal onClose={() => setIsLoginModalOpen(false)} />
+      {/* --- INSERCIÓN DE MODALES REUTILIZABLES --- */}
+      
+      {/* 1. Modal de Login */}
+      {activeModal === 'login' && (
+        <LoginModal 
+            onClose={() => setActiveModal('none')} 
+            onSwitchToRegister={() => setActiveModal('register')} 
+        />
+      )}
+
+      {/* 2. Modal de Registro */}
+      {activeModal === 'register' && (
+        <RegisterModal 
+            onClose={() => setActiveModal('none')} 
+            onSwitchToLogin={() => setActiveModal('login')} 
+        />
       )}
     </div>
   );

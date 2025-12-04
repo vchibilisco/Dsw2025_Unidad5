@@ -13,6 +13,7 @@ const useAuth = () => {
     singin: context.singin,
     singout: context.singout,
     signup: context.signup,
+    signupUser: context.signupUser,
   };
 
 };

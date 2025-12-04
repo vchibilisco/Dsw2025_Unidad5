@@ -1,13 +1,10 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import Button from '../../shared/components/Button';
 import Card from '../../shared/components/Card';
 import { getOrdersAdmin, orderStatus } from '../services/listOrder';
 
 function ListOrdersPage() {
-  const navigate = useNavigate();
-
-  // 1. CAMBIO: Renombramos el estado para que tenga sentido (antes customerIdFilter)
+  
   const [searchTerm, setSearchTerm] = useState('');
   
   const [status, setStatus] = useState(orderStatus.ALL);
@@ -17,7 +14,6 @@ function ListOrdersPage() {
   
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
 
   const fetchOrders = async () => {
     try {
@@ -43,14 +39,11 @@ function ListOrdersPage() {
 
   useEffect(() => {
     setPageNumber(1);
-  }, [status, searchTerm]); // Se reinicia si cambias el filtro o la búsqueda
+  }, [status, searchTerm]); 
 
   useEffect(() => {
     fetchOrders();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageNumber, pageSize, status]); 
-  // Nota: Quitamos searchTerm de aquí para que solo busque al dar Enter o Click en buscar
-  // Si prefieres búsqueda en vivo, agrega searchTerm al array de dependencias.
 
   const handleSearch = () => {
     setPageNumber(1);
@@ -64,15 +57,6 @@ function ListOrdersPage() {
     return new Date(dateString).toLocaleDateString() + ' ' + new Date(dateString).toLocaleTimeString();
   };
 
-  const getStatusName = (statusCode) => {
-    switch(statusCode) {
-        case 0: return 'Pendiente';
-        case 1: return 'Enviado';
-        case 2: return 'Entregado';
-        case 3: return 'Cancelado';
-        default: return 'Desconocido';
-    }
-  };
 
   return (
     <div>
@@ -82,7 +66,6 @@ function ListOrdersPage() {
         </div>
 
         <div className='flex flex-col sm:flex-row gap-4'>
-          {/* 3. CAMBIO: Input de búsqueda por nombre */}
           <div className='flex items-center gap-3 w-full sm:w-1/2'>
             <input 
                 value={searchTerm} 
@@ -90,7 +73,7 @@ function ListOrdersPage() {
                 type="text" 
                 placeholder='Buscar por Nombre del Cliente' 
                 className='text-[1rem] p-2 border rounded w-full'
-                onKeyDown={(e) => e.key === 'Enter' && handleSearch()} // Búsqueda al dar Enter
+                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
             />
             <Button className='h-11 w-11 flex justify-center items-center' onClick={handleSearch}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -120,52 +103,41 @@ function ListOrdersPage() {
             <div className="text-center p-4 text-gray-500">No se encontraron órdenes.</div>
         ) : (
             orders.map(order => {
-              // --- 4. CAMBIO: Variables Seguras (incluyendo customerName) ---
-              const rawId = order.orderId || order.Id || ''; 
-              const displayId = rawId.toString(); 
+              const displayId = order.orderId.toString();
 
-              // Aquí leemos el nombre que nos manda el backend nuevo
-              const customerName = order.customerName || order.CustomerName || 'Cliente Desconocido';
 
-              const date = order.date || order.Date;
-              const address = order.shippingAddress || order.ShippingAddress || 'Sin dirección';
-              const status = order.status !== undefined ? order.status : order.Status;
-              const total = order.totalAmount || order.TotalAmount || 0;
-              const items = order.items || order.Items || [];
 
               return (
                 <Card key={displayId} className="hover:shadow-md transition-shadow">
                   <div className="flex justify-between items-start">
                       <div>
-                          {/* Título Principal: NOMBRE DEL CLIENTE */}
                           <h2 className="text-xl font-bold text-gray-800">
-                              {customerName}
+                              {order.customerName}
                           </h2>
                           
-                          {/* Subtítulo: ID de la orden (más pequeño) */}
                           <p className="text-xs text-gray-400 font-mono mb-2">
                               Orden #{displayId.length > 8 ? displayId.substring(0, 8) : displayId}...
                           </p>
 
-                          <p className="text-sm text-gray-500">{formatDate(date)}</p>
+                          <p className="text-sm text-gray-500">{formatDate(order.date)}</p>
                           <p className="mt-1 text-gray-700">
-                              <strong>Envío a:</strong> {address}
+                              <strong>Envío a:</strong> {order.shippingAddress}
                           </p>
                           <div className="mt-2 text-sm text-gray-600">
-                              {items.length} items comprados
+                              {order.items.length} items comprados
                           </div>
                       </div>
                       
                       <div className="text-right">
                           <span className={`px-3 py-1 rounded-full text-sm font-semibold 
-                              ${status === 0 ? 'bg-yellow-100 text-yellow-800' : 
-                                status === 2 ? 'bg-green-100 text-green-800' : 
-                                status === 3 ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'}`
+                              ${order.status === 0 ? 'bg-yellow-100 text-yellow-800' : 
+                                order.status === 2 ? 'bg-green-100 text-green-800' : 
+                                order.status === 3 ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'}`
                           }>
-                              {getStatusName(status)}
+                              {order.status}
                           </span>
                           <p className="text-2xl font-bold text-gray-900 mt-2">
-                              ${Number(total).toFixed(2)}
+                              ${Number(order.totalAmount).toFixed(2)}
                           </p>
                       </div>
                   </div>
@@ -184,7 +156,7 @@ function ListOrdersPage() {
           Anterior
         </button>
         
-        <span className="font-medium">Página {pageNumber}/ {totalPages || 1}</span>
+        <span className="font-medium">Página {pageNumber} / {totalPages || 1}</span>
         
         <button
           disabled={pageNumber >= totalPages || loading}
@@ -202,7 +174,7 @@ function ListOrdersPage() {
           }}
           className='ml-3 p-2 border rounded'
         >
-          <option value="1">1</option>
+          <option value="2">2</option>
           <option value="5">5</option>
           <option value="10">10</option>
           <option value="20">20</option>

@@ -94,9 +94,39 @@ function ListProductsPage() {
           loading
             ? <span>Buscando datos...</span>
             : products.map(product => (
-              <Card key={product.sku}>
-                <h1>{product.sku} - {product.name}</h1>
-                <p className='text-base'>Stock: {product.stockQuantity} - ${product.currentUnitPrice} - {product.isActive ? 'Activado' : 'Desactivado'}</p>
+              <Card key={product.sku} className="hover:shadow-md transition-shadow">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h2 className="text-xl font-bold text-gray-800">
+                      {product.name}
+                    </h2>
+                    <p className="text-xs text-gray-400 font-mono mb-2">
+                      {product.sku}
+                    </p>
+                    <p className="mt-1 text-gray-700">
+                      <strong>Stock:</strong> {product.stockQuantity}
+                    </p>
+                    <p className="mt-1 text-gray-700">
+                      <strong>Precio unitario:</strong> ${product.currentUnitPrice}
+                    </p>
+                    
+                  </div>
+                  <div className="text-right">
+                          <div className="mt-2">
+                            <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider
+                              ${product.isActive 
+                                ? 'bg-green-100 text-green-800 border border-green-200' 
+                                : 'bg-red-100 text-red-800 border border-red-200'
+                              }`}
+                            >
+                              {product.isActive ? 'Activado' : 'Desactivado'}
+                            </span>
+                          </div>
+                          <p className="text-2xl font-bold text-gray-900 mt-2">
+                              ${product.currentUnitPrice}
+                          </p>
+                      </div>
+                </div>
               </Card>
             ))
         }
@@ -106,15 +136,15 @@ function ListProductsPage() {
         <button
           disabled={pageNumber === 1}
           onClick={() => setPageNumber(pageNumber - 1)}
-          className='bg-gray-200 disabled:bg-gray-100'
+          className='px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed'
         >
-          Atras
+          Anterior
         </button>
-        <span>{pageNumber} / {totalPages}</span>
+        <span className="font-medium">Página {pageNumber} / {totalPages} </span>
         <button
           disabled={ pageNumber === totalPages }
           onClick={() => setPageNumber(pageNumber + 1)}
-          className='bg-gray-200 disabled:bg-gray-100'
+          className='px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed'
         >
           Siguiente
         </button>
@@ -125,7 +155,7 @@ function ListProductsPage() {
             setPageNumber(1);
             setPageSize(Number(evt.target.value));
           }}
-          className='ml-3'
+          className='ml-3 p-2 border rounded'
         >
           <option value="2">2</option>
           <option value="10">10</option>
