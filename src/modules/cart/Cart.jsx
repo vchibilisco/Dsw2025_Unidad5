@@ -8,7 +8,7 @@ import useAuth from "../auth/hook/useAuth";
 
 // 2. Importamos los Modales reutilizables que creamos anteriormente
 import LoginModal from "../shared/components/LoginModal";
-import RegisterModal from "../shared/components/registerModal";
+import RegisterModal from "../shared/components/RegisterModal";
 
 // --- Subcomponente para las filas (se mantiene igual) ---
 const CartItemRow = ({ item, updateQuantity, removeFromCart }) => {
