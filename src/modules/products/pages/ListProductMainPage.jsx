@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getMainProducts } from '../services/listMain';
+import { getMainProducts } from '../services/ListMain';
 import ProductCard from '../components/ProductCard';
 
 function ListProductMainPage() {
