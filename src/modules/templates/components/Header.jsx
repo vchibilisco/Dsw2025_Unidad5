@@ -85,7 +85,7 @@ function Header() {
             items-center
             justify-between
             p-4
-            mx-auto max-w-7xl
+            w-full
             shadow-md
             bg-white
             sticky top-0 z-40
@@ -107,6 +107,9 @@ function Header() {
                     </NavLink>
                     <NavLink to='/cart' className={getLinkStyles}>
                         Carrito de Compras
+                    </NavLink>
+                    <NavLink to='/admin' className={getLinkStyles}>
+                        Portal del admin
                     </NavLink>
                 </nav>
             </div>

@@ -9,12 +9,14 @@ import axios from 'axios';
 
 function RegisterForm() {
   const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
   const [roles, setRoles] = useState([]);
 
   const {
     register,
     handleSubmit,
     watch,
+    reset,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -36,29 +38,41 @@ function RegisterForm() {
 }, []);
 
   const onValid = async (formData) => {
-    try {
-      const { error } = await signup(
-        formData.username,
-        formData.email,
-        formData.password,
-        formData.role
-      );
+  console.log("1. Botón presionado y formulario validado:", formData);
+  
+  try {
+    setErrorMessage('');
+    setSuccessMessage('');
 
-      if (error) {
-        setErrorMessage(error.frontendErrorMessage);
-        return;
-      }
+    console.log("2. Enviando petición a signup...");
+    const response = await signup(
+      formData.username,
+      formData.email,
+      formData.password,
+      formData.role
+    );
+    
+    console.log("3. Respuesta recibida del backend:", response);
 
-      navigate('/login');
-
-    } catch (error) {
-      if (error?.response?.data?.code) {
-        setErrorMessage(frontendErrorMessage[error?.response?.data?.code]);
-      } else {
-        setErrorMessage('Llame a soporte');
-      }
+    if (response && response.error) {
+      console.log("4A. Se detectó un error en la respuesta.");
+      setErrorMessage(response.error.frontendErrorMessage);
+      return;
     }
-  };
+
+    console.log("4B. Todo salió bien, mostrando mensaje de éxito.");
+    reset();
+    setSuccessMessage(`Usuario ${formData.username} creado exitosamente.`);
+
+  } catch (error) {
+    console.error("Hubo un fallo crítico (Catch):", error);
+    if (error?.response?.data?.code) {
+      setErrorMessage(frontendErrorMessage[error?.response?.data?.code]);
+    } else {
+      setErrorMessage('Llame a soporte');
+    }
+  }
+};
 
   return (
     <form
@@ -113,11 +127,9 @@ function RegisterForm() {
       </div>
 
       <Button type="submit">Registrarse</Button>
-      <Button variant="secondary" onClick={() => navigate('/login')}>
-        Volver al Login
-      </Button>
 
-      {errorMessage && <p className="text-red-500">{errorMessage}</p>}
+      {errorMessage && <p className="text-red-500 font-medium">{errorMessage}</p>}
+      {successMessage && <p className="text-green-600 font-medium">{successMessage}</p>}
     </form>
   );
 }

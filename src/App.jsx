@@ -74,6 +74,10 @@ function App() {
           path: '/admin/orders',
           element: <ListOrdersPage />,
         },
+        {
+          path: '/admin/signup',
+          element: <RegisterPage />,
+        },
       ],
     },
   ]);
