@@ -5,7 +5,7 @@ import { LogIn, UserPlus, LogOut, Search, Menu, X } from "lucide-react"; // Icon
 // 1. IMPORTANTE: Importar el hook REAL y los Modales
 import useAuth from '../../auth/hook/useAuth';
 import LoginModal from '../../shared/components/LoginModal';
-import RegisterModal from '../../shared/components/registerModal';
+import RegisterModal from '../../shared/components/RegisterModal';
 
 function Header() {
   const [openMenu, setOpenMenu] = useState(false);
