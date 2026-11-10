@@ -1,14 +1,16 @@
 import { instance } from '../../shared/api/axiosInstance';
 
-export const getProducts = async (search = null, status = null, pageNumber = 1, pageSize = 20 ) => {
+export const getProducts = async (status = null, SearchTerm = null, pageNumber = 1, pageSize = 20 ) => {
   const queryString = new URLSearchParams({
-    search,
     status,
+    SearchTerm,
     pageNumber,
     pageSize,
   });
 
   const response = await instance.get(`api/products/admin?${queryString}`);
+
+  console.log("FETCHING WITH:", status, SearchTerm, pageNumber, pageSize);
 
   return { data: response.data, error: null };
 };

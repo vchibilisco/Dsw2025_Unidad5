@@ -9,8 +9,14 @@ instance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
 
+    console.log("1. Interceptor ejecutándose para:", config.url);
+    console.log("2. Token en LocalStorage:", token);
+
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+      console.log("3. Header agregado:", config.headers.Authorization);
+    } else {
+      console.warn("!! ALERTA: No se encontró token, la petición irá sin autorización.");
     }
 
     return config;

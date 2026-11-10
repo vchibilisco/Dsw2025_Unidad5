@@ -15,11 +15,11 @@ function CreateProductForm() {
   } = useForm({
     defaultValues: {
       sku: '',
-      cui: '',
       name: '',
-      description: '',
       price: 0,
       stock: 0,
+      description: '',
+      cui: '',
     },
   });
 
@@ -63,13 +63,6 @@ function CreateProductForm() {
           })}
         />
         <Input
-          label='Código Único'
-          error={errors.cui?.message}
-          {...register('cui', {
-            required: 'Código Único es requerido',
-          })}
-        />
-        <Input
           label='Nombre'
           error={errors.name?.message}
           {...register('name', {
@@ -77,13 +70,8 @@ function CreateProductForm() {
           })}
         />
         <Input
-          label='Descripción'
-          {...register('description')}
-        />
-        <Input
           label='Precio'
           error={errors.price?.message}
-          type='number'
           {...register('price', {
             min: {
               value: 0,
@@ -99,6 +87,17 @@ function CreateProductForm() {
               value: 0,
               message: 'No puede tener un stock negativo',
             },
+          })}
+        />
+        <Input
+          label='Descripción'
+          {...register('description')}
+        />
+        <Input
+          label='Código Único'
+          error={errors.cui?.message}
+          {...register('cui', {
+            required: 'Código Único es requerido',
           })}
         />
         <div className='sm:text-end'>
